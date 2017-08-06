@@ -3,8 +3,6 @@
 int  row_size();
 int  col_size();
 
-
-
 int main()
 {
     string line;
@@ -47,7 +45,12 @@ int main()
 
     file.clear();
     cout << '\n';
-    m.print();
+  //Matrix<Vertex*>::iterator it;
     m.enumerateBuildings();
+    m.Circle();
+    cout << "end";
+  
+    m.print();
     std::system("pause");
 }
+  

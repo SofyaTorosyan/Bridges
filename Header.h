@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <windows.h>
+#include  <utility> // std::pair
 
 using namespace std;
 
@@ -44,6 +44,7 @@ struct Vertex : Point
     Type type = Type::corner;
     int  bid = 0;
     bool is_on_bridge = false;
+    Move prevmove = None;
 };
 
 template<class T>
@@ -52,66 +53,78 @@ class Matrix
 public:
     Matrix();
     ~Matrix();
-    int  rows();
-    int  cols();
+    int  rows ();
+    int  cols ();
     void print();
     void C4V(int, int);
     Vertex*& operator()(int, int);
     void Circle();
-    void enumerateBuildings();
+    void enumerateBuildings( );
 
     class iterator
     {
     public:
-        Move prevmove = None;
         using vertex_pointer = T;
         using reference = T&;
         using pointer = T*;
-
+     
         iterator() = default;
+    
         iterator(bool b) : is_on_building(b) { }
 
-        void set_iterator() // TODO: Make iterator find a non-connected building
+        int x()   { return x_; }
+        
+        int y()   { return y_; }
+       
+        void set_iterator() 
         {
-            int x, y;
-            cin >> x >> y;
-            x_ = x;
-            y_ = y;
+            int r = m.rows_;
+            int c = m.cols_;
+            int i = 0;
+            while (r != 0)
+            {
+                while (c != 0)
+                {
+                    if (this == nullptr)
+                        *this->right();
+                    else
+                        return;
+                    c--;
+                }
+                *this->update(0, ++i);
+                r--;
+            }
         }
 
         iterator left(int i = 1)
         {
             (*this).x_ -= i;
-            if (i != 1)
-                cout << x_ << "  " << y_ << endl;
-            prevmove = Left;
+            if (**this != nullptr)
+            (**this)->prevmove = Left;
             return *this;
         }
 
         iterator right(int i = 1)
         {
             (*this).x_ += i;
-            if (i != 1)
-                cout << x_ << "  " << y_ << endl;
-            prevmove = Right;
+            if(**this!=nullptr)
+            (**this)->prevmove = Right;
             return *this;
         }
 
         iterator up(int i = 1)
         {
             (*this).y_ -= i;
-            if (i != 1)
-                cout << x_ << "  " << y_ << endl;
-            prevmove = Up;
+            if (**this != nullptr)
+            (**this)->prevmove = Up;
             return *this;
         }
 
         iterator down(int i = 1)
         {
-            if (i != 1)
-                cout << x_ << "  " << y_ << endl;
             (*this).y_ += i;
-            prevmove = Down;
+            if (**this != nullptr)
+            (**this)->prevmove = Down;
             return *this;
         }
 
@@ -143,9 +156,19 @@ public:
             return temp;
         }
 
+        bool operator!=(const iterator& r_it)
+        {
+            return (x_ != r_it.x_ || y_ != r_it.y_);
+        }
+
+        bool operator==(const iterator& r_it)
+        {
+            return (x_ == r_it.x_ && y_ == r_it.y_);
+        }
+
         void move_Clockwise_From_Wall() 
         {
-            switch (prevmove)
+            switch ((**this)->prevmove)
             {
             case Right: right(); break;
             case Left:  left();  break;
@@ -156,26 +179,37 @@ public:
 
         void move_Clockwise_From_Corner(iterator start, int& count)
         {
-            if (*this != start)   //Still it haven't come to the beginning.
-                switch (prevmove)
+            if ((**this)->prevmove != None)   //Still it haven't come to the beginning.
+            {
+                if ((*this) != start)
+                    switch ((**this)->prevmove)
+                    {
+                    case Right:  down();  break;
+                    case Left:   up();    break;
+                    case Down:   left();  break;
+                    case Up:     right(); break;
+                    }
+                else
                 {
-                case Right: down();  break;
-                case Left:  up();    break;
-                case Down:  left();  break;
-                case Up:    right(); break;
+                    count++;
+                    (**this)->prevmove = None;
+
                 }
+            }
             else                //When it is at the beginning of building.(prevmove=-1)
             {
                 cout << "it is at the beginning" << endl;
+                (**this)->prevmove = None;
                 if (count == 0)
-                    (*this).right();
+                    right();
                 count++;
             }
+            return;
         }
 
         void move_Clockwise_From_Corner_Inner()
         {
-            switch (prevmove)
+            switch ((**this)->prevmove)
             {
             case Right: up();    break;
             case Left:  down();  break;
@@ -191,12 +225,7 @@ public:
             count = 2;         // Go out from while.
         }
 
-        bool operator!=(const iterator& r_it)
-        {
-            return (x_ != r_it.x_ || y_ != r_it.y_);
-        }
-
-        iterator operator=(const iterator& r_it)
+        iterator operator=( iterator& r_it)
         {
             x_ = r_it.x_;
             y_ = r_it.y_;
@@ -225,158 +254,14 @@ public:
             return *this;
         }
 
-        // TODO:  vector find_isolated_building(iterator, int bid, std::vector<iterator>& v) // TODO: Make this free function
-        iterator find_isolated_building(int radius, int bid) // TODO: Make this free function
-        {
-            std::vector<iterator> v;
-            /*
-            if (x_ == 0)
-            if ((*this).right(radius) != nullptr && (*(*this).right(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            if (x_ = m.rows_ - 1)
-            if ((*this).left(radius) != nullptr && (*(*this).left(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            else
-            if ((*this).right(radius) != nullptr && (*(*this).right(radius))->bid != bid)
-            return  (*this).right(radius);
-            if ((*this).left(radius) != nullptr && (*(*this).left(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-
-            if (y_ == 0)
-            if ((*this).down(radius) != nullptr && (*(*this).down(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            if (y_ = m.cols_ - 1)
-            if ((*this).up(radius) != nullptr && (*(*this).up(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            else
-            if ((*this).down(radius) != nullptr && (*(*this).down(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            if ((*this).up(radius) != nullptr && (*(*this).up(radius))->bid != bid)
-            v.push_back((*this).right(radius));
-            */
-
-            switch ((**this).type)
-            {
-            case corner:
-                switch ((*this).prevmove)
-            case None:
-                if (x_ == 0 && y_ == 0)
-                    break;
-                if (x_ == 0 && y != 0)
-                    if ((*this).up(radius) != nullptr && (*(*this).up(radius))->bid != bid)
-                    {
-                        v.push_back((*this).right(radius));
-                        break;
-                    }
-
-                if (x_ != 0 && y_ == 0)
-                {
-                    if ((*this).right(radius) != nullptr && (*(*this).right(radius))->bid != bid)
-                        v.push_back((*this).right(radius));
-                    if ((*this).left(radius) != nullptr && (*(*this).left(radius))->bid != bid)
-                        v.push_back((*this).left(radius));
-                    break;
-                }
-                else
-                {
-                    if ((*this).left(radius) != nullptr && (*(*this).left(radius))->bid != bid)
-                        v.push_back((*this).left(radius));
-                    if ((*this).up(radius) != nullptr && (*(*this).up(radius))->bid != bid)
-                        v.push_back((*this).up(radius));
-                }
-
-                {
-                }
-            }
-            if (v.empty())
-                return iterator(false);
-
-            else
-            {
-                auto it = v.back();
-                v.pop_back();
-                return it;
-            }
-        }
-
-        //TODO
-        void connect_buildings(int bid, int radius, Move prev)
-        {
-            Matrix<Vertex*>::iterator it1 = (*this);
-            int count = 0;
-            while (count != 2)
-            {
-                (**this)->bid = bid;
-                switch ((**this)->type)
-                {
-                case wall:
-                    moveClockWiseFromWall();
-                    break;
-                case corner:
-                    if ((*this) != it1)
-                        switch (prevmove)
-                        {
-                        case Right: down();  break;
-                        case Left:  up();    break;
-                        case Down:  left();  break;
-                        case Up:    right(); break;
-                        }
-                    else
-                    {
-                        if (count == 0)
-                            right();
-                        count++;
-                    }
-                    break;
-                case corner_inner:
-                    switch (prevmove)
-                    {
-                    case Right: up();    break;
-                    case Left:  down();  break;
-                    case Down:  right(); break;
-                    case Up:    left();  break;
-                    }
-                    break;
-                }
-            }
-
-            while (radius != 1)
-            {
-                switch (prev)
-                {
-                case Right:
-                    Vertex((*this).x_, (*this).y_);
-                    (*(*this).left())->is_on_bridge = true;
-                    (*this).left();
-                    radius--;
-                    break;
-                case Left:
-                    Vertex((*this).x_, (*this).y_);
-                    (*(*this).right())->is_on_bridge = true;
-                    (*this).right();
-                    radius--;
-                    break;
-                case Up:
-                    Vertex((*this).x_, (*this).y_);
-                    (*(*this).down())->is_on_bridge = true;
-                    (*this).down();
-                    radius--;
-                    break;
-                case Down:
-                    Vertex((*this).x_, (*this).y_);
-                    (*(*this).up())->is_on_bridge = true;
-                    (*this).up();
-                    radius--;
-                    break;
-                }
-            }
-        }
     private:
-        Matrix<T>& m_ = m;
-        int x_ = 0;
-        int y_ = 0;
+        int x_              = 0;
+        int y_              = 0;
+        Matrix<T>& m_       = m;
         bool is_on_building = false;
+       // Move prevmove = None;
     };
+
 private:
     using M = vector <vector<Vertex*>>;
     static int max_bid;
@@ -385,10 +270,12 @@ private:
     M    m_;
 };
 
-int Matrix<Vertex*>::max_bid = 0;
-ifstream file("My_City.txt", std::ifstream::in);
+char**          hashdot;
+ifstream        file("My_City.txt", std::ifstream::in);
 Matrix<Vertex*> m;
-char** hashdot;
+vector<pair<Vertex*, Move>> corner_inners;
+
+int Matrix<Vertex*>::max_bid = 0;
 
 bool contains(Vertex* v)
 {
@@ -418,11 +305,175 @@ int col_size()
     return count + 1;
 }
 
+void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int radius)
+{
+    pair<Matrix<Vertex*>::iterator,char> start = it;
+    int count = 0;
+
+    if((**it.first).bid!=bid)
+    while (count != 2)
+    {
+        switch ((*it.first)->type)
+        {
+        case wall:
+            it.first.move_Clockwise_From_Wall();
+            (**it.first).bid = bid;
+            break;
+        case corner:
+            it.first.move_Clockwise_From_Corner(start.first,count);
+            (**it.first).bid = bid;
+            break;
+        case corner_inner:
+            it.first.move_Clockwise_From_Corner_Inner();
+            (**it.first).bid = bid;
+            break;
+        }
+    }
+
+    for (unsigned int i = 0; i < corner_inners.size(); i++)
+        m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prevmove = corner_inners.at(i).second;
+
+    if (radius != 1)
+        switch (it.second)
+        {
+        case 'R':
+            it.first.left();
+            while (*it.first == nullptr)
+            {
+                auto v = new Vertex(it.first.x(), it.first.y());
+                m(it.first.x(),it.first.y())=v;
+                (*it.first)->is_on_bridge = true;
+                m(it.first.x(), it.first.y())->prevmove = Left;
+                it.first.left();
+            }
+            break;
+
+        case 'L':
+            it.first.right();
+            while (*it.first == nullptr)
+            {
+                auto v = new Vertex(it.first.x(), it.first.y());
+                m(it.first.x(), it.first.y()) = v;
+                (*it.first)->is_on_bridge = true;
+                m(it.first.x(), it.first.y())->prevmove = Right;  //(**it.first).prevmove = Right;
+                it.first.right();
+            }
+            break;
+
+        case 'U':
+            it.first.down();
+            while (*it.first == nullptr)
+            {
+                auto v = new Vertex(it.first.x(), it.first.y());
+                m(it.first.x(), it.first.y()) = v;
+                (*it.first)->is_on_bridge = true;
+                m(it.first.x(), it.first.y())->prevmove = Down;
+                it.first.down();
+            }
+            break;
+
+        case 'D':
+            it.first.up();
+            while (*it.first == nullptr)
+            {
+                auto v = new Vertex(it.first.x(), it.first.y());
+                m(it.first.x(), it.first.y()) = v;
+                (*it.first)->is_on_bridge = true;
+                m(it.first.x(), it.first.y())->prevmove = Up;
+                it.first.up();
+            }
+            break;
+        }
+}
+
+void find_Isolated_Building(Matrix<Vertex*>::iterator& it, int radius, int bid, vector<pair<Matrix<Vertex*>::iterator,char>>& v) 
+{
+    if ((**it).x == 0)
+    {
+        if (((**it).x + radius) < m.rows())
+            if ((*it.right_v(radius)) != nullptr)
+                if ((**it.right_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.right_v(radius), 'R'));  // vector of pair for not changing prevmoves and having directions-R D L U
+    }
+
+    if ((**it).x == m.rows() - 1)
+    {
+        if (((**it).x - radius) > 0)
+            if ((*it.left_v(radius)) != nullptr)
+                if ((**it.left_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.left_v(radius), 'L'));
+    }
+
+    else
+    {
+        if ((**it).x + radius < m.rows())
+        if ((*it.right_v(radius)) != nullptr)
+            if ((**it.right_v(radius)).bid != (**it).bid)
+                v.push_back(make_pair(it.right_v(radius), 'R'));
+
+        if (((**it).x - radius) > 0)
+         if ((*it.left_v(radius)) != nullptr)
+                if ((**it.left_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.left_v(radius), 'L'));
+    }
+
+    if ((**it).y == 0)
+    {
+        if (((**it).y + radius) < m.cols())
+            if ((*it.down_v(radius)) != nullptr)
+                if ((**it.down_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.down_v(radius), 'D'));
+    }
+
+    if ((**it).y == m.cols() - 1)
+    {
+        if (((**it).y - radius) > 0)
+            if ((*it.up_v(radius)) != nullptr)
+                if ((**it.up_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.up_v(radius), 'U'));
+    }
+
+    else
+    {
+        if (((**it).y + radius) < m.cols())
+            if ((*it.down_v(radius)) != nullptr)
+                if ((**it.down_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.down_v(radius), 'D'));
+
+        if (((**it).y - radius) > 0)
+            if ((*it.up_v(radius)) != nullptr)
+                if ((**it.up_v(radius)).bid != (**it).bid)
+                    v.push_back(make_pair(it.up_v(radius), 'U'));
+    }
+}
+
+void find_new_building(Matrix<Vertex*>::iterator& it)
+{
+    int bid = ++(**it).bid;
+    int r = m.rows();
+    int c = m.cols();
+    int i = 0;
+    while (c != 1)
+    {
+        while (r != 1)
+        {
+            if ((*it.right_v()) != nullptr)
+                if ((**it.right()).bid == bid)
+                    return;
+                else
+            r--;
+            else
+            it.right();
+        }
+        c--;
+        it.update(0, ++i);
+    }
+}
+
 Vertex::Vertex(int a, int b)
 {
     x = a;
     y = b;
-    type = Type::corner; // TODO: Test without this (relying only on in-class initializer)
     bid = 0;
 }
 
@@ -486,6 +537,7 @@ Matrix<T>::Matrix() : rows_(row_size()), cols_(col_size())
         col.resize(cols_);
 }
 
+
 template<class T>
 Matrix<T>::~Matrix()
 {
@@ -514,10 +566,15 @@ void Matrix<T>::print()
     {
         for (int i = 0; i < rows_; i++)
         {
-            if (operator()(i, j) != nullptr)
-                cout << 'o';
+            if (m(i,j)==nullptr)
+                cout << " ";
             else
-                cout << '.';
+            {
+                if ((*m(i, j)).is_on_bridge)
+                        cout << '.';
+                else
+                    cout << 'o';
+            }
         }
         cout << '\n';
     }
@@ -628,10 +685,12 @@ Vertex*& Matrix<T>:: operator() (int r, int c)
 template<class T>
 void Matrix<T>::enumerateBuildings()
 {
+    //vector<pair<Vertex*,Move>> corner_inners;
     Matrix<Vertex*>::iterator it;
     Matrix<Vertex*>::iterator start = it;
     bool go_out = true;
     int r = m.rows_;
+    int c = m.cols_;
     int i = 0;
     while (m.cols_ != 0)
     {
@@ -641,31 +700,68 @@ void Matrix<T>::enumerateBuildings()
             if ((*it) != nullptr)
                 if ((*it)->bid == 0)    
                 {
+                  //  it.prevmove = None;
                     start = it;
                     max_bid++;
                     int count = 0;            // For knowing that it came to the beginning again.
                     while (count != 2)
                     {
                         (*it)->bid = max_bid;
+                      
                         switch ((*it)->type)
                         {
+
                         case inside:
                             it.move_Clockwise_From_Inside(count);
+
                             break;
                         case wall:
-                            it.move_Clockwise_From_Wall();
+                            //it.move_Clockwise_From_Wall();
+                            switch ((**it).prevmove)
+                            {
+                            case Right: it.right(); break;
+                            case Left:  it.left();  break;
+                            case Down:  it.down();  break;
+                            case Up:    it.up();    break;
+                            }
                             break;
                         case corner:
-                            it.move_Clockwise_From_Corner(start, count);
+                            //it.move_Clockwise_From_Corner(start, count);
+                            if (it != start)   //Still it haven't come to the beginning.
+                                switch ((**it).prevmove)
+                                {
+                                case Right:  it.down();    break;
+                                case Left:   it.up();      break;
+                                case Down:   it.left();    break;
+                                case Up:     it.right();   break;
+                                }                                                                                                        
+                            else                //When it is at the beginning of building.(prevmove=-1)
+                            {
+                                cout << "it is at the beginning" << endl;
+                                (**it).prevmove = None;
+                                if (count == 0)
+                                    it.right();
+                                count++;
+                            }
                             break;
                         case corner_inner:
-                            it.move_Clockwise_From_Corner_Inner();
+                            // it.move_Clockwise_From_Corner_Inner();
+                            // corner_inners.push_back(*it);
+                            switch ((**it).prevmove)
+                            {
+                            case Right:  corner_inners.push_back(make_pair((*it), Right));  it.up();    break;
+                            case Left:                                                      it.down();  break;
+                            case Down:   corner_inners.push_back(make_pair((*it), Down));   it.right(); break;
+                            case Up:                                                        it.left();  break;
+                            }                        
                             break;
                         }
                     }
+
+                    for (unsigned int i = 0; i < corner_inners.size(); i++)
+                        m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prevmove=corner_inners.at(i).second;
                 }
             m.rows_--;
-            it.prevmove = None;
             if (m.rows_ > 1)
                 it.right();
         }
@@ -674,75 +770,56 @@ void Matrix<T>::enumerateBuildings()
         if (m.cols_ != 0)
             it = it.update(0, ++i);
     }
+    //Recover m.rows_ and m.cols_ values.
+    m.rows_ = r;
+    m.cols_ = c;
 }
 
-//TODO
+
 template<class T>
 void Matrix<T>::Circle()
 {
     int count;
     int radius = 0;
     Matrix<Vertex*>::iterator it;
-    Matrix<Vertex*>::iterator it2;
-    Matrix<Vertex*>::iterator finder;
-    std::vector<Matrix<Vertex*>::iterator> vertexes;
+    Matrix<Vertex*>::iterator start;
+   // std::pair< Matrix<Vertex*>::iterator,char> v;
+    std::vector<std::pair< Matrix<Vertex*>::iterator,char>> vertexes;
     int r = 0;
 
-    finder.set_iterator();
-    it = finder;
-    it2 = it;
+    it.set_iterator();
+    start = it;
 
-    while (max_bid != 0)
+    while (max_bid != 1)
     {
         radius++;
         count = 0;
-        it = it2;
+        vertexes.clear();
         while (count != 2)
         {
-            finder = it;
-            //            if (finder.find_isolated_building(radius, (*finder)->bid, vertexes, finder.prevmove) != iterator(false))
-            //            {
-            //                finder.connect_buildings((*it)->bid, radius, it.prevmove);
-            //              //  radius = 1;
-            //            }
+            find_Isolated_Building(it, radius, (**it).bid, vertexes);
             switch ((*it)->type)
             {
             case wall:
-                switch (it.prevmove)
-                {
-                case Right:  it.right(); break;
-                case Left:   it.left();  break;
-                case Down:   it.down();  break;
-                case Up:     it.up();    break;
-                }
+                it.move_Clockwise_From_Wall();
                 break;
             case corner:
-                if (it != it2)
-                    switch (it.prevmove)
-                    {
-                    case Right: it.down();  break;
-                    case Left:  it.up();    break;
-                    case Down:  it.left();  break;
-                    case Up:    it.right(); break;
-                    }
-                else
-                {
-                    if (count == 0)
-                        it.right();
-                    count++;
-                }
+                it.move_Clockwise_From_Corner(start, count);
                 break;
             case corner_inner:
-                switch (it.prevmove)
-                {
-                case Right: it.up();    break;
-                case Left:  it.down();  break;
-                case Down:  it.right(); break;
-                case Up:    it.left();  break;
-                }
+                it.move_Clockwise_From_Corner_Inner();
                 break;
             }
         }
+
+        for (unsigned int i = 0; i < corner_inners.size(); i++)
+            m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prevmove = corner_inners.at(i).second;
+
+        if (!vertexes.empty())
+            for (unsigned int i = 0; i < vertexes.size(); i++)
+                connect_2_building(vertexes.at(i), (**it).bid, radius);
+        max_bid--;
     }
 }
+
 #endif
