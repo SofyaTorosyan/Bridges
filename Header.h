@@ -43,8 +43,11 @@ struct Vertex : Point
     Vertex* right();
     Type type = Type::corner;
     int  bid = 0;
-    bool is_on_bridge = false;
+    bool is_on_bridge       = false;
+    bool is_on_bridge_start = false;
+    bool is_on_bridge_end   = false;
     Move prevmove = None;
+    Move bridge_direction = None;
 };
 
 template<class T>
@@ -259,7 +262,6 @@ public:
         int y_              = 0;
         Matrix<T>& m_       = m;
         bool is_on_building = false;
-       // Move prevmove = None;
     };
 
 private:
@@ -337,6 +339,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int r
         switch (it.second)
         {
         case 'R':
+            (**it.first).is_on_bridge_end = true;
             it.first.left();
             while (*it.first == nullptr)
             {
@@ -346,9 +349,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int r
                 m(it.first.x(), it.first.y())->prevmove = Left;
                 it.first.left();
             }
+            (**it.first).is_on_bridge_start = true;
+            (**it.first).bridge_direction = Right;
             break;
 
         case 'L':
+            (**it.first).is_on_bridge_end = true;
             it.first.right();
             while (*it.first == nullptr)
             {
@@ -358,9 +364,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int r
                 m(it.first.x(), it.first.y())->prevmove = Right;  //(**it.first).prevmove = Right;
                 it.first.right();
             }
+            (**it.first).is_on_bridge_start = true;
+            (**it.first).bridge_direction = Left;
             break;
-
+           
         case 'U':
+            (**it.first).is_on_bridge_end = true;
             it.first.down();
             while (*it.first == nullptr)
             {
@@ -370,9 +379,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int r
                 m(it.first.x(), it.first.y())->prevmove = Down;
                 it.first.down();
             }
+            (**it.first).is_on_bridge_start = true;
+            (**it.first).bridge_direction = Up;
             break;
 
         case 'D':
+            (**it.first).is_on_bridge_end = true;
             it.first.up();
             while (*it.first == nullptr)
             {
@@ -382,70 +394,106 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& it, int bid, int r
                 m(it.first.x(), it.first.y())->prevmove = Up;
                 it.first.up();
             }
+            (**it.first).is_on_bridge_start = true;
+            (**it.first).bridge_direction = Down;
             break;
         }
 }
 
-void find_Isolated_Building(Matrix<Vertex*>::iterator& it, int radius, int bid, vector<pair<Matrix<Vertex*>::iterator,char>>& v) 
+bool is_repeated(vector<pair< Matrix<Vertex*>::iterator, char>>& vertexes, Matrix<Vertex*>::iterator it)
+{
+    unsigned int i = 0;
+    for (; i < vertexes.size(); i++)
+        if ((it.x() == vertexes[i].first.x() || it.y() == vertexes[i].first.y()) && (**it).bid == (**vertexes[i].first).bid)
+            return true;
+    return false;
+}
+
+void find_Isolated_Building(Matrix<Vertex*>::iterator& it, int radius, int bid, vector<pair<Matrix<Vertex*>::iterator, char>>& v)
 {
     if ((**it).x == 0)
     {
         if (((**it).x + radius) < m.rows())
             if ((*it.right_v(radius)) != nullptr)
                 if ((**it.right_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.right_v(radius), 'R'));  // vector of pair for not changing prevmoves and having directions-R D L U
+                {
+                    if (!is_repeated(v, it.right_v(radius)))
+                        v.push_back(make_pair(it.right_v(radius), 'R'));  // vector of pair for not changing prevmoves and having directions-R D L U
+                }
     }
 
-    if ((**it).x == m.rows() - 1)
-    {
-        if (((**it).x - radius) > 0)
-            if ((*it.left_v(radius)) != nullptr)
-                if ((**it.left_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.left_v(radius), 'L'));
+        if ((**it).x == m.rows() - 1)
+        {
+            if (((**it).x - radius) > 0)
+                if ((*it.left_v(radius)) != nullptr)
+                    if ((**it.left_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.left_v(radius)))
+                            v.push_back(make_pair(it.left_v(radius), 'L'));
+                    }
+        }
+
+        else
+        {
+            if ((**it).x + radius < m.rows())
+                if ((*it.right_v(radius)) != nullptr)
+                    if ((**it.right_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.right_v(radius)))
+                            v.push_back(make_pair(it.right_v(radius), 'R'));
+                    }
+
+
+            if (((**it).x - radius) > 0)
+                if ((*it.left_v(radius)) != nullptr)
+                    if ((**it.left_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.left_v(radius)))
+                            v.push_back(make_pair(it.left_v(radius), 'L'));
+                    }
+        }
+
+        if ((**it).y == 0)
+        {
+            if (((**it).y + radius) < m.cols())
+                if ((*it.down_v(radius)) != nullptr)
+                    if ((**it.down_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.down_v(radius)))
+                            v.push_back(make_pair(it.down_v(radius), 'D'));
+                    }
+        }
+
+        if ((**it).y == m.cols() - 1)
+        {
+            if (((**it).y - radius) > 0)
+                if ((*it.up_v(radius)) != nullptr)
+                    if ((**it.up_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.up_v(radius)))
+                            v.push_back(make_pair(it.up_v(radius), 'U'));
+                    }
+        }
+
+        else
+        {
+            if (((**it).y + radius) < m.cols())
+                if ((*it.down_v(radius)) != nullptr)
+                    if ((**it.down_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.down_v(radius)))
+                            v.push_back(make_pair(it.down_v(radius), 'D'));
+                    }
+
+            if (((**it).y - radius) > 0)
+                if ((*it.up_v(radius)) != nullptr)
+                    if ((**it.up_v(radius)).bid != (**it).bid)
+                    {
+                        if (!is_repeated(v, it.up_v(radius)))
+                            v.push_back(make_pair(it.up_v(radius), 'U'));
+                    }
+        }
     }
-
-    else
-    {
-        if ((**it).x + radius < m.rows())
-        if ((*it.right_v(radius)) != nullptr)
-            if ((**it.right_v(radius)).bid != (**it).bid)
-                v.push_back(make_pair(it.right_v(radius), 'R'));
-
-        if (((**it).x - radius) > 0)
-         if ((*it.left_v(radius)) != nullptr)
-                if ((**it.left_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.left_v(radius), 'L'));
-    }
-
-    if ((**it).y == 0)
-    {
-        if (((**it).y + radius) < m.cols())
-            if ((*it.down_v(radius)) != nullptr)
-                if ((**it.down_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.down_v(radius), 'D'));
-    }
-
-    if ((**it).y == m.cols() - 1)
-    {
-        if (((**it).y - radius) > 0)
-            if ((*it.up_v(radius)) != nullptr)
-                if ((**it.up_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.up_v(radius), 'U'));
-    }
-
-    else
-    {
-        if (((**it).y + radius) < m.cols())
-            if ((*it.down_v(radius)) != nullptr)
-                if ((**it.down_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.down_v(radius), 'D'));
-
-        if (((**it).y - radius) > 0)
-            if ((*it.up_v(radius)) != nullptr)
-                if ((**it.up_v(radius)).bid != (**it).bid)
-                    v.push_back(make_pair(it.up_v(radius), 'U'));
-    }
-}
 
 void find_new_building(Matrix<Vertex*>::iterator& it)
 {
@@ -536,7 +584,6 @@ Matrix<T>::Matrix() : rows_(row_size()), cols_(col_size())
     for (auto& col : m_)
         col.resize(cols_);
 }
-
 
 template<class T>
 Matrix<T>::~Matrix()
@@ -685,7 +732,6 @@ Vertex*& Matrix<T>:: operator() (int r, int c)
 template<class T>
 void Matrix<T>::enumerateBuildings()
 {
-    //vector<pair<Vertex*,Move>> corner_inners;
     Matrix<Vertex*>::iterator it;
     Matrix<Vertex*>::iterator start = it;
     bool go_out = true;
@@ -700,7 +746,6 @@ void Matrix<T>::enumerateBuildings()
             if ((*it) != nullptr)
                 if ((*it)->bid == 0)    
                 {
-                  //  it.prevmove = None;
                     start = it;
                     max_bid++;
                     int count = 0;            // For knowing that it came to the beginning again.
@@ -716,7 +761,6 @@ void Matrix<T>::enumerateBuildings()
 
                             break;
                         case wall:
-                            //it.move_Clockwise_From_Wall();
                             switch ((**it).prevmove)
                             {
                             case Right: it.right(); break;
@@ -726,7 +770,6 @@ void Matrix<T>::enumerateBuildings()
                             }
                             break;
                         case corner:
-                            //it.move_Clockwise_From_Corner(start, count);
                             if (it != start)   //Still it haven't come to the beginning.
                                 switch ((**it).prevmove)
                                 {
@@ -745,8 +788,6 @@ void Matrix<T>::enumerateBuildings()
                             }
                             break;
                         case corner_inner:
-                            // it.move_Clockwise_From_Corner_Inner();
-                            // corner_inners.push_back(*it);
                             switch ((**it).prevmove)
                             {
                             case Right:  corner_inners.push_back(make_pair((*it), Right));  it.up();    break;
@@ -775,7 +816,6 @@ void Matrix<T>::enumerateBuildings()
     m.cols_ = c;
 }
 
-
 template<class T>
 void Matrix<T>::Circle()
 {
@@ -783,8 +823,6 @@ void Matrix<T>::Circle()
     int radius = 0;
     Matrix<Vertex*>::iterator it;
     Matrix<Vertex*>::iterator start;
-   // std::pair< Matrix<Vertex*>::iterator,char> v;
-    std::vector<std::pair< Matrix<Vertex*>::iterator,char>> vertexes;
     int r = 0;
 
     it.set_iterator();
