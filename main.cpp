@@ -43,14 +43,16 @@ int main()
         y++;
     }
 
+
     file.clear();
     cout << '\n';
-  //Matrix<Vertex*>::iterator it;
+   
     m.enumerateBuildings();
     m.Circle();
-    cout << "end";
-  
+    cout << "City with bridges is \n";
     m.print();
+    cout << "Count of bridges is " << count_of_bridges<<endl;
+    cout << "Count of non connected bridges is " << --non_connected_buildings<<endl;
     std::system("pause");
 }
   
