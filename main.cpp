@@ -1,58 +1,52 @@
 #include"Header.h"
 
-int  row_size();
-int  col_size();
-
 int main()
 {
     string line;
     int    x = 0;
     int    y = 0;
-    cout << m.rows();
-    hashdot = new char*[m.rows() - 1];
-    for (int i = 0; i < m.rows() - 1; i++)
-        hashdot[i] = new char[m.cols() - 1];
+    int a;
 
-    if (!file)
+    while (cin >> a)
     {
-        cout << "No file is found";
-        return -1;
-    }
+        y = 0;
+        cout << "City with hash dot\n";
+        hash_dot.fileIn.seekg(0, ios::beg);
+        hash_dot.Random_Generate();
+        hash_dot.fileIn.seekg(0, ios::beg);
 
-    cout << "City with hash dot\n";
-    file.seekg(0, ios::beg);
-    while (getline(file, line))
-    {
-        x = 0;
-        for (char& c : line)
+        while (getline(hash_dot.fileIn, line))
         {
-            if (c == '#')
+            x = 0;
+            for (char& c : line)
             {
-                cout << '#';
-                hashdot[x][y] = '#';
-                m.C4V(x, y);
+                if (c == '#')
+                    m.C4V(x, y);
+                x++;
             }
-            else
-            {
-                cout << '.';
-                hashdot[x][y] = '.';
-            }
-            x++;
+            cout << '\n';
+            y++;
         }
-        cout << '\n';
-        y++;
+
+        m.enumerateBuildings();
+        m.Circle();
+        cout << "City with bridges is \n";
+        m.print();
+        cout << "Count of bridges is " << count_of_bridges << endl;
+     
+        hash_dot.fileIn.clear();
+
+        //Clean all data structures.
+        for (int j = 0; j < m.cols(); j++)
+            for (int i = 0; i < m.rows(); i++)
+                m(i, j) = nullptr;
+        symmetric_corner_inners.clear();
+        prev_bridge_directions.clear();
+        prev_end = None;
+        prev_start = None;
+        count_of_bridges = 0;
+        non_connected_buildings = 0;
     }
 
-
-    file.clear();
-    cout << '\n';
-   
-    m.enumerateBuildings();
-    m.Circle();
-    cout << "City with bridges is \n";
-    m.print();
-    cout << "Count of bridges is " << count_of_bridges<<endl;
-    cout << "Count of non connected bridges is " << --non_connected_buildings<<endl;
     std::system("pause");
 }
-  

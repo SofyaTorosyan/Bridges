@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <utility>   /* std::pair */
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include  <utility> // std::pair
 
 using namespace std;
 
@@ -33,52 +33,136 @@ enum Direction
     None
 };
 
-int radius = 0;
-
 struct Vertex : Point
 {
     Vertex(int, int);
     Vertex() { }
-    Vertex* up   ();
-    Vertex* left ();
-    Vertex* down ();
-    Vertex* right();
-    int  bid  = 0;
-    int bridge_start = 0;
-    int bridge_end = 0;
+    Vertex* move_up();
+    Vertex* move_left();
+    Vertex* move_down();
+    Vertex* move_right();
+    int bid                      = 0;
+    int bridge_end               = 0;
+    int bridge_start             = 0;
     int  count_for_corner_inners = 0;
-    Type type = Type::corner;
-    bool is_on_bridge          = false;
-    bool is_on_bridge_end      = false;
-    bool is_on_bridge_start    = false;
-    Direction prev_direction   = None;
-    Direction bridge_direction = None;
+    bool is_on_bridge            = false;
+    bool is_on_bridge_end        = false;
+    bool is_on_bridge_start      = false;
+    Type type                    = Type::corner;
+    Direction prev_direction     = None; 
+    Direction bridge_direction   = None;
 };
+
+class HashDot
+{
+private:
+    char** hash_dot_;
+    int    length_;
+    int    width_;
+public:
+    fstream fileIn;
+
+    HashDot(int l, int w) : length_(l), width_(w)
+    {
+        hash_dot_ = new char*[length_];
+        for (int i = 0; i < length_; i++)
+            hash_dot_[i] = new char[width_];
+        fileIn.open("My_City.txt");
+    }
+
+    void Random_Generate()
+    {
+        char str[4] = { '.','#','.','.' };
+        for (int j = 0; j < width_; j++)
+        {
+            for (int i = 0; i < length_; i++)
+            {
+                hash_dot_[i][j] = str[rand() % 4];
+                cout << hash_dot_[i][j];
+            }
+            cout << endl;
+        }
+        Write_To_File();
+    }
+
+    int length()
+    {
+        return length_;
+    }
+
+    int width()
+    {
+        return width_;
+    }
+
+    char& operator()(int i, int j)
+    {
+        return  hash_dot_[i][j];
+    }
+
+    void Write_To_File()
+    {
+        if (!fileIn)
+            cout << "No file is found";
+
+        for (int j = 0; j < width_; j++)
+        {
+            for (int i = 0; i < length_; i++)
+                fileIn << hash_dot_[i][j];
+            fileIn << endl;
+        }
+    }
+
+    int row_size()
+    {
+        string line;
+        fileIn.open("My_City.txt");
+        if (!fileIn)
+            cout << "There is no file.";
+        fileIn.seekg(0, ios::beg);
+        getline(fileIn, line);
+        return line.size() + 1;
+    }
+
+    int col_size()
+    {
+        int count = 0;
+        string line;
+        fileIn.open("My_City.txt");
+        if (!fileIn)
+            cout << "There is no file";
+        fileIn.seekg(0, ios::beg);
+        while (getline(fileIn, line))
+            ++count;
+        fileIn.clear();
+        return count + 1;
+    }
+};
+
 
 template<class T>
 class Matrix
 {
 public:
-    Matrix ();
+    Matrix();
     ~Matrix();
-    void C4V   (int, int);
-    int  rows  ();
-    int  cols  ();
-    void print ();
+    void C4V(int, int);
+    int  rows();
+    int  cols();
+    void print();
     void Circle();
-    Vertex*& operator()    (int, int);
-    void enumerateBuildings( );
+    Vertex*& operator() (int, int);
+    void enumerateBuildings();
 
     class iterator
     {
     public:
         using vertex_pointer = T;
-        using reference = T&;
-        using pointer = T*;
-
+        using reference      = T&;
+        using pointer        = T*;
         iterator() = default;
 
-        iterator(bool b) : is_on_building(b) { }
+        iterator(bool b) : is_on_building_(b) { }
 
         int x() { return x_; }
 
@@ -89,70 +173,75 @@ public:
             int r = m.rows_;
             int c = m.cols_;
             int i = 0;
-            while (r != 0)
+            while (c != 1)
             {
-                while (c != 0)
+                while (r != 1)
                 {
                     if (**this == nullptr)
-                        *this->right();
+                        *this->move_right();
                     else
                         return;
-                    c--;
+                    r--;
                 }
                 *this->update(0, ++i);
-                r--;
+                c--;
+                r = m.rows_;
             }
         }
 
-        iterator left(int i = 1)
+        iterator move_left(int i = 1)
         {
             (*this).x_ -= i;
+            prevmove_   = Left;
             return *this;
         }
 
-        iterator right(int i = 1)
+        iterator move_right(int i = 1)
         {
             (*this).x_ += i;
+            prevmove_   = Right;
             return *this;
         }
 
-        iterator up(int i = 1)
+        iterator move_up(int i = 1)
         {
             (*this).y_ -= i;
+            prevmove_   = Up;
             return *this;
         }
 
-        iterator down(int i = 1)
+        iterator move_down(int i = 1)
         {
             (*this).y_ += i;
+            prevmove_   = Down;
             return *this;
         }
 
         iterator left_v(int i = 1)
         {
             iterator temp = *this;
-            temp.x_ -= i;
+            temp.x_      -= i;
             return temp;
         }
 
         iterator right_v(int i = 1)
         {
             iterator temp = *this;
-            temp.x_ += i;
+            temp.x_      += i;
             return temp;
         }
 
         iterator up_v(int i = 1)
         {
             iterator temp = *this;
-            temp.y_ -= i;
+            temp.y_      -= i;
             return temp;
         }
 
         iterator down_v(int i = 1)
         {
             iterator temp = *this;
-            temp.y_ += i;
+            temp.y_      += i;
             return temp;
         }
 
@@ -166,68 +255,67 @@ public:
             return (x_ == r_it.x_ && y_ == r_it.y_);
         }
 
-        void  move_Opposite_To_Bridge_Direction()
+        void  move_Opposite_To_Bridge_Direction(Direction bridge_direction)
         {
-            switch ((**this)->bridge_direction)
+            switch (bridge_direction)
             {
             case Right:
-                while (!(**this)->is_on_bridge_start)
-                    left();
-               // (**this)->prev_direction = prev_start;
+                move_left();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_left();
                 break;
             case Left:
-                while (!(**this)->is_on_bridge_start)
-                    right();
-               // (**this)->prev_direction = prev_start;
+                move_right();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_right();
                 break;
             case Up:
-                while (!(**this)->is_on_bridge_start)
-                    down();
-              //  (**this)->prev_direction = prev_start;
+                move_down();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_down();
                 break;
             case Down:
-                while (!(**this)->is_on_bridge_start)
-                    up();
-              //  (**this)->prev_direction = prev_start;
+                move_up();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_up();
                 break;
             }
         }
 
-        void move_Towards_To_Bridge_Direction()
+        void move_Towards_To_Bridge_Direction(Direction bridge_direction)
         {
-            switch ((**this)->bridge_direction)
+            switch (bridge_direction)
             {
             case Right:
-                while (!(**this)->is_on_bridge_end)
-                    right();
-               // (**this)->prev_direction = prev_end;
+                move_right();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_right();
                 break;
             case Left:
-                while (!(**this)->is_on_bridge_end)
-                    left();
-               // (**this)->prev_direction = prev_end;
+                move_left();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_left();
                 break;
             case Up:
-                while (!(**this)->is_on_bridge_end)
-                    up();
-                //(**this)->prev_direction = prev_end;
+                move_up();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_up();
                 break;
             case Down:
-                while (!(**this)->is_on_bridge_end)
-                    down();
-               // (**this)->prev_direction = prev_end;
+                move_down();
+                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                    move_down();
             }
         }
 
-       void move_Clockwise_From_Wall()
+        void move_Clockwise_From_Wall()
         {
-           
             switch ((**this)->prev_direction)
             {
-            case Right: right();  (**this)->prev_direction = Right; break;
-            case Left:  left();   (**this)->prev_direction = Left;  break;
-            case Down:  down();   (**this)->prev_direction = Down;  break;
-            case Up:    up();     (**this)->prev_direction = Up;    break;
+            case Up:    move_up   ();  (**this)->prev_direction = Up;    break;
+            case Down:  move_down ();  (**this)->prev_direction = Down;  break;
+            case Left:  move_left ();  (**this)->prev_direction = Left;  break;
+            case Right: move_right();  (**this)->prev_direction = Right; break;
             }
         }
 
@@ -238,8 +326,7 @@ public:
                 if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
                 {
                     (**this)->bridge_end = 0;
-                    move_Opposite_To_Bridge_Direction();
-                  
+                    move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
                 }
                 else
                     move_Clockwise_From_Wall();
@@ -247,16 +334,17 @@ public:
             else
             {
                 if ((**this)->is_on_bridge_start && (++(**this)->bridge_start == 1))
-                    move_Towards_To_Bridge_Direction();
+                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
                 else
                 {
-                    (**this)->bridge_start = 0;
-                    move_Clockwise_From_Wall();
-                  
+                    if ((**this)->bridge_start == 2)
+                        move_Clockwise_From_Wall();
+                    else
+                        move_Opposite_To_Bridge_Direction(find(prev_bridge_directions, *this));
                 }
             }
         }
-    
+
         void move_From_Corner(iterator start, int& count)
         {
             if (!(**this)->is_on_bridge_start)
@@ -264,85 +352,73 @@ public:
                 if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
                 {
                     (**this)->bridge_end = 0;
-                    move_Opposite_To_Bridge_Direction();
-                   
+                    move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
                 }
                 else
                 {
-
                     if ((**this)->is_on_bridge_end && (**this)->prev_direction == None)
-                    {
-                       // (**this)->prev_direction = Up;
                         move_Clockwise_From_Corner(start, count);
-                      // (* (*this).left_v())->prev_direction = None;
-
-                    }
-                    else 
+                    else
                         move_Clockwise_From_Corner(start, count);
                     return;
-                    
                 }
             }
             else
             {
                 if (++(**this)->bridge_start == 1)
-                    move_Towards_To_Bridge_Direction();
+                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
                 else
                 {
-                    (**this)->bridge_start = 0;
-                    move_Clockwise_From_Corner(start, count);
-                   
+                    if ((**this)->bridge_start == 2)
+                        move_Clockwise_From_Corner(start, count);
+                    else
+                        move_Opposite_To_Bridge_Direction(find(prev_bridge_directions, *this));
                 }
             }
-        
         }
 
         void move_Clockwise_From_Corner(iterator start, int& count)
         {
-            if ((**this)->prev_direction != None)   //Still it haven't come to the beginning.
+            if ((**this)->prev_direction != None)   /* Still it haven't come to the beginning.*/
             {
                 if ((*this) != start)
                     switch ((**this)->prev_direction)
                     {
-                    case Right: down();   break;
-                    case Left:  up();     break;
-                    case Down:  left();   break;
-                    case Up:    right();  break;
+                    case Up:    move_right();  break;
+                    case Down:  move_left();  break;
+                    case Left:  move_up();  break;
+                    case Right: move_down();  break;
                     }
                 else
                 {
                     if (++count == 1)
                         switch ((**this)->prev_direction)
                         {
-                        case Right: down();   break;
-                        case Left:  up();     break;
-                        case Down:  left();   break;
-                        case Up:    right();  break;
+                        case Up:    move_right();  break;
+                        case Down:  move_left();  break;
+                        case Left:  move_up();  break;
+                        case Right: move_down();  break;
                         }
-                       // move_Clockwise_From_Corner(start, count);
                 }
             }
-
             else
             {
-                cout << "it is at the beginning" << endl;
                 if ((*this) == start)
                     count++;
-                if(count!=2)
-                    right();
-                  
+                if (count != 2)
+                    move_right();
             }
             return;
         }
 
         void move_Clockwise_From_Corner_Inner()
         {
-            switch ((**this)->prev_direction)
+            switch (this->prevmove_)
             {
-            case Right: if ((**this)->count_for_corner_inners == 0) { (**this)->count_for_corner_inners = 1;  up();    }  else { (**this)->count_for_corner_inners = 0; down();  } break;
-            case Left:  if ((**this)->count_for_corner_inners == 0) { (**this)->count_for_corner_inners = 1;  down();  }  else { (**this)->count_for_corner_inners = 0; up();    } break;
-            case Down:  if ((**this)->count_for_corner_inners == 0) { (**this)->count_for_corner_inners = 1;  right(); }  else { (**this)->count_for_corner_inners = 0; left();  } break;
-            case Up:    if ((**this)->count_for_corner_inners == 0) { (**this)->count_for_corner_inners = 1;  left();  }  else { (**this)->count_for_corner_inners = 0; right(); } break;
+            case Right: move_up();    break;
+            case Left:  move_down();  break;
+            case Down:  move_right(); break;
+            case Up:    move_left();  break;
             }
         }
 
@@ -350,10 +426,10 @@ public:
         {
             (**this)->bid = (*(*this).left_v())->bid;
             max_bid--;
-            count = 2;         // Go out from while.
+            count = 2;         /* Go out prevmove_ while.*/
         }
 
-        iterator operator=( iterator& r_it)
+        iterator& operator=(iterator& r_it)
         {
             x_ = r_it.x_;
             y_ = r_it.y_;
@@ -383,10 +459,11 @@ public:
         }
 
     private:
-        int x_              = 0;
-        int y_              = 0;
-        Matrix<T>& m_       = m;
-        bool is_on_building = false;
+        int x_ = 0;
+        int y_ = 0;
+        Matrix<T>& m_ = m;
+        bool is_on_building_ = false;
+        Direction prevmove_ = None;
     };
 
 private:
@@ -397,266 +474,301 @@ private:
     M    m_;
 };
 
-char**          hashdot;
-ifstream        file("My_City.txt", std::ifstream::in);
-Matrix<Vertex*> m;
-vector<pair<Vertex*, Direction>> corner_inners;
-
+int radius = 0;
 int Matrix<Vertex*>::max_bid = 0;
+HashDot  hash_dot(10, 10);
+ofstream fileOut("Connected.txt");
+Matrix<Vertex*> m;
+vector<pair<Vertex*, Direction>> symmetric_corner_inners;
+vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
+Direction prev_end          = None;
+Direction prev_start        = None;
+int count_of_bridges        = 0;
+int non_connected_buildings = 0;
 
 bool contains(Vertex* v)
 {
     return (m((*v).x, (*v).y)) != nullptr;
 }
 
-int row_size()
+bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
 {
-    string line;
-    if (!file)
-        cout << "There is no file";
-    file.seekg(0, ios::beg);
-    getline(file, line);
-    return line.size() + 1;
+    if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
+     || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
+        return true;
+    return false;
+
 }
 
-int col_size()
+Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions, Matrix<Vertex*>::iterator it)
 {
-    int count = 0;
-    string line;
-    if (!file)
-        cout << "There is no file";
-    file.seekg(0, ios::beg);
-    while (getline(file, line))
-        ++count;
-    file.clear();
-    return count + 1;
+    for (unsigned int i = 0; i < prev_bridge_directions.size(); i++)
+        if (prev_bridge_directions[i].first == it)
+            return prev_bridge_directions[i].second;
 }
 
-void connect_2_building(pair<Matrix<Vertex*>::iterator,char>& connectible, int bid)
+void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
 {
-    int i     = 0;
+    int i = 0;
     int count = 0;
-    pair<Matrix<Vertex*>::iterator,char> connectible_start = connectible;
-    
-    if((**connectible.first).bid!=bid)
-    while (count != 2)
+    pair<Matrix<Vertex*>::iterator, char> connectible_start = connectible;
+
+    if ((**connectible.first).bid != bid)
+        while (count != 2)
+        {
+            switch ((*connectible.first)->type)
+            {
+            case wall:
+                (**connectible.first).bid = bid;
+                if (connectible.first == connectible_start.first)
+                    ++count;
+                if (count != 2)
+                    connectible.first.move_Clockwise_From_Wall();
+                break;
+            case corner:
+                (**connectible.first).bid = bid;
+                connectible.first.move_Clockwise_From_Corner(connectible_start.first, count);
+                break;
+            case corner_inner:
+                (**connectible.first).bid = bid;
+                connectible.first.move_Clockwise_From_Corner_Inner();
+                break;
+            }
+        }
+
+    for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
+        m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
+
+    switch (connectible.second)
     {
-        switch ((*connectible.first)->type)
+    case 'R':
+        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_start)
         {
-        case wall:
-            (**connectible.first).bid = bid;
-            if (connectible.first == connectible_start.first)
-                ++count;
-                if(count!=2)
-            connectible.first.move_Clockwise_From_Wall();
-            break;
-        case corner:
-            (**connectible.first).bid = bid;
-            connectible.first.move_Clockwise_From_Corner(connectible_start.first,count);
-            break;
-        case corner_inner:
-            (**connectible.first).bid = bid;
-            connectible.first.move_Clockwise_From_Corner_Inner();
-            break;
+            (**connectible.first).is_on_bridge_start = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
         }
+        (**connectible.first).bridge_direction = Right;
+        connectible.first.move_left();
+        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        {
+            auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            m(connectible.first.x(), connectible.first.y()) = v;
+            (*connectible.first)->is_on_bridge = true;
+
+            m(connectible.first.x(), connectible.first.y())->prev_direction = Right;
+            connectible.first.move_left();
+        }
+        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            (**connectible.first).is_on_bridge_end = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Right;
+        break;
+    case 'L':
+        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            (**connectible.first).is_on_bridge_start = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Left;
+        connectible.first.move_right();
+        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        {
+            auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            m(connectible.first.x(), connectible.first.y()) = v;
+            (*connectible.first)->is_on_bridge = true;
+
+            m(connectible.first.x(), connectible.first.y())->prev_direction = Left;
+            connectible.first.move_right();
+        }
+        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            (**connectible.first).is_on_bridge_end = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Left;
+        break;
+    case 'U':
+        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            (**connectible.first).is_on_bridge_start = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Up;
+        connectible.first.move_down();
+        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        {
+            auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            m(connectible.first.x(), connectible.first.y()) = v;
+            (*connectible.first)->is_on_bridge = true;
+
+            m(connectible.first.x(), connectible.first.y())->prev_direction = Up;
+            connectible.first.move_down();
+        }
+        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            (**connectible.first).is_on_bridge_end = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Up;
+        break;
+
+    case 'D':
+        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            (**connectible.first).is_on_bridge_start = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Down;
+        connectible.first.move_up();
+        while (*connectible.first == nullptr || (*connectible.first!=nullptr && (**connectible.first).is_on_bridge==true))
+        {
+            auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            m(connectible.first.x(), connectible.first.y()) = v;
+            (*connectible.first)->is_on_bridge = true;
+
+            m(connectible.first.x(), connectible.first.y())->prev_direction = Down;
+            connectible.first.move_up();
+        }
+        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            (**connectible.first).is_on_bridge_end = false;
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        (**connectible.first).bridge_direction = Down;
+        break;
     }
-
-    for (unsigned int i = 0; i < corner_inners.size(); i++)
-        m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prev_direction = corner_inners.at(i).second;
-
-    if (radius != 1)
-        switch (connectible.second)
-        {
-        case 'R':
-            (**connectible.first).is_on_bridge_end = true;
-            (**connectible.first).bridge_direction = Right;
-           
-            connectible.first.left();
-            while (*connectible.first == nullptr)
-            {
-                auto v = new Vertex(connectible.first.x(), connectible.first.y());
-                m(connectible.first.x(), connectible.first.y())=v;
-                (*connectible.first)->is_on_bridge = true;
-              
-                m(connectible.first.x(), connectible.first.y())->prev_direction = Right;
-                connectible.first.left();
-            }
-            (**connectible.first).is_on_bridge_start = true;
-            (**connectible.first).bridge_direction = Right;
-            break;
-
-        case 'L':
-            (**connectible.first).is_on_bridge_end = true;
-            (**connectible.first).bridge_direction = Left;
-            connectible.first.right();
-            while (*connectible.first == nullptr)
-            {
-                auto v = new Vertex(connectible.first.x(), connectible.first.y());
-                m(connectible.first.x(), connectible.first.y()) = v;
-                (*connectible.first)->is_on_bridge = true;
-             
-                m(connectible.first.x(), connectible.first.y())->prev_direction = Left;
-                connectible.first.right();
-            }
-            (**connectible.first).is_on_bridge_start = true;
-            (**connectible.first).bridge_direction = Left;
-            break;
-           
-        case 'U':
-            (**connectible.first).is_on_bridge_end = true;
-            (**connectible.first).bridge_direction = Up;
-            connectible.first.down();
-            while (*connectible.first == nullptr)
-            {
-                auto v = new Vertex(connectible.first.x(), connectible.first.y());
-                m(connectible.first.x(), connectible.first.y()) = v;
-                (*connectible.first)->is_on_bridge = true;
-               
-                m(connectible.first.x(), connectible.first.y())->prev_direction = Up;
-                connectible.first.down();
-            }
-            (**connectible.first).is_on_bridge_start = true;
-            (**connectible.first).bridge_direction = Up;
-            break;
-
-        case 'D':
-            (**connectible.first).is_on_bridge_end = true;
-            (**connectible.first).bridge_direction = Down;
-            connectible.first.up();
-            while (*connectible.first == nullptr)
-            {
-                auto v = new Vertex(connectible.first.x(), connectible.first.y());
-                m(connectible.first.x(), connectible.first.y()) = v;
-                (*connectible.first)->is_on_bridge = true;
-              
-                m(connectible.first.x(), connectible.first.y())->prev_direction = Down;
-                connectible.first.up();
-            }
-            (**connectible.first).is_on_bridge_start = true;
-            (**connectible.first).bridge_direction = Down;
-            break;
-        }
 }
 
-pair<Matrix<Vertex*>::iterator,char> find_Isolated_Building(pair<Matrix<Vertex*>::iterator,char> it, int bid)
+pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*>::iterator, char> it, int bid)
 {
     if ((**it.first).x == 0)
     {
         if (((**it.first).x + radius) < m.rows())
             if ((*it.first.right_v(radius)) != nullptr)
-                if ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0)
+                if ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0 && (**it.first.right_v(radius)).type != inside)
                 {
-                    it.first.right(radius);
+                    it.first.move_right(radius);
                     (it.second) = 'R';
                     return it;
                 }
     }
 
-        if ((**it.first).x == m.rows() - 1)
-        {
-            if (((**it.first).x - radius) > 0)
-                if ((*it.first.left_v(radius)) != nullptr)
-                    if ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0)
-                    {
-                        it.first.left(radius);
-                        (it.second) = 'L';
-                        return it;
-                    }
-        }
+    if ((**it.first).x == m.rows() - 1)
+    {
+        if (((**it.first).x - radius) > 0)
+            if ((*it.first.left_v(radius)) != nullptr)
+                if ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0 && (**it.first.left_v(radius)).type != inside)
+                {
+                    it.first.move_left(radius);
+                    (it.second) = 'L';
+                    return it;
+                }
+    }
 
-        else
-        {
-            if ((**it.first).x + radius < m.rows())
-                if ((*it.first.right_v(radius)) != nullptr)
-                    if ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0)
-                    {
-                        it.first.right(radius);
-                        (it.second) = 'R';
-                        return it;
-                    }
+    else
+    {
+        if ((**it.first).x + radius < m.rows())
+            if ((*it.first.right_v(radius)) != nullptr)
+                if ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0 && (**it.first.right_v(radius)).type != inside)
+                {
+                    it.first.move_right(radius);
+                    (it.second) = 'R';
+                    return it;
+                }
 
-            if (((**it.first).x - radius) > 0)
-                if ((*it.first.left_v(radius)) != nullptr)
-                    if ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0)
-                    {
-                        it.first.left(radius);
-                        (it.second) = 'L';
-                        return it;
-                    }
-        }
+        if (((**it.first).x - radius) > 0)
+            if ((*it.first.left_v(radius)) != nullptr)
+                if ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0 && (**it.first.left_v(radius)).type != inside)
+                {
+                    it.first.move_left(radius);
+                    (it.second) = 'L';
+                    return it;
+                }
+    }
 
-        if ((**it.first).y == 0)
-        {
-            if (((**it.first).y + radius) < m.cols())
-                if ((*it.first.down_v(radius)) != nullptr)
-                    if ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0)
-                    {
-                        it.first.down(radius);
-                        (it.second) = 'D';
-                        return it;
-                    }
-        }
+    if ((**it.first).y == 0)
+    {
+        if (((**it.first).y + radius) < m.cols())
+            if ((*it.first.down_v(radius)) != nullptr)
+                if ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0 && (**it.first.down_v(radius)).type != inside)
+                {
+                    it.first.move_down(radius);
+                    (it.second) = 'D';
+                    return it;
+                }
+    }
 
-        if ((**it.first).y == m.cols() - 1)
-        {
-            if (((**it.first).y - radius) > 0)
-                if ((*it.first.up_v(radius)) != nullptr)
-                    if ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0)
-                    {
-                        it.first.up(radius);
-                        (it.second) = 'U';
-                        return it;
-                    }
-        }
+    if ((**it.first).y == m.cols() - 1)
+    {
+        if (((**it.first).y - radius) > 0)
+            if ((*it.first.up_v(radius)) != nullptr)
+                if ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0 && (**it.first.up_v(radius)).type != inside)
+                {
+                    it.first.move_up(radius);
+                    (it.second) = 'U';
+                    return it;
+                }
+    }
 
-        else
-        {
-            if (((**it.first).y + radius) < m.cols())
-                if ((*it.first.down_v(radius)) != nullptr)
-                    if ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0)
-                    {
-                        it.first.down(radius);
-                        (it.second) = 'D';
-                        return it;
-                    }
+    else
+    {
+        if (((**it.first).y + radius) < m.cols())
+            if ((*it.first.down_v(radius)) != nullptr)
+                if ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0 && (**it.first.down_v(radius)).type != inside)
+                {
+                    it.first.move_down(radius);
+                    (it.second) = 'D';
+                    return it;
+                }
 
-            if (((**it.first).y - radius) > 0)
-                if ((*it.first.up_v(radius)) != nullptr)
-                    if ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0)
-                    {
-                        it.first.up(radius);
-                        (it.second) = 'U';
-                        return it;
-                    }
-        }
-        return pair<Matrix<Vertex*>::iterator, char>();
+        if (((**it.first).y - radius) > 0)
+            if ((*it.first.up_v(radius)) != nullptr)
+                if ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0 && (**it.first.up_v(radius)).type != inside)
+                {
+                    it.first.move_up(radius);
+                    (it.second) = 'U';
+                    return it;
+                }
+    }
+    return pair<Matrix<Vertex*>::iterator, char>();
 }
 
 void find_new_building(Matrix<Vertex*>::iterator& it)
 
 {
-    int bid  = (**it).bid;
+    int bid = (**it).bid;
     int rows = (**it).x;
     int cols = (**it).y;
-    int i    = 0;
-    while (cols != m.cols()-1)
+    while (cols != m.cols() - 1)
     {
-        while (rows != m.rows()-1)
+        while (rows != m.rows() - 1)
         {
-            if ((*it.right_v()) != nullptr)
-                if ((**it.right()).bid != bid && (**it).bid!=0)
+            if ((*it) != nullptr)
+                if ((**it).bid != bid && (**it).bid != 0)
                     return;
                 else
+                {
                     rows++;
+                    it.move_right();
+                }
             else
             {
-                it.right();
+                it.move_right();
                 rows++;
             }
         }
-        cols++;
-        it.update(0, ++i);
-        rows= 0;
+        it.update(0, ++cols);
+        rows = 0;
     }
 }
 
@@ -667,7 +779,7 @@ Vertex::Vertex(int a, int b)
     bid = 0;
 }
 
-Vertex* Vertex::up()
+Vertex* Vertex::move_up()
 {
     if ((*this).y != 0)
     {
@@ -680,7 +792,7 @@ Vertex* Vertex::up()
     return nullptr;
 }
 
-Vertex* Vertex::left()
+Vertex* Vertex::move_left()
 {
     if ((*this).x != 0)
     {
@@ -693,7 +805,7 @@ Vertex* Vertex::left()
     return nullptr;
 }
 
-Vertex* Vertex::down()
+Vertex* Vertex::move_down()
 {
     if ((*this).y != m.cols() + 1)
     {
@@ -706,7 +818,7 @@ Vertex* Vertex::down()
     return  nullptr;
 }
 
-Vertex* Vertex::right()
+Vertex* Vertex::move_right()
 {
     if ((*this).x != m.rows())
     {
@@ -720,20 +832,22 @@ Vertex* Vertex::right()
 }
 
 template<class T>
-Matrix<T>::Matrix() : rows_(row_size()), cols_(col_size())
+Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 {
     m_.resize(rows_);
     for (auto& col : m_)
         col.resize(cols_);
 }
 
+
 template<class T>
 Matrix<T>::~Matrix()
 {
-    for (int j = 0; j < m.cols_; j++)
-        for (int i = 0; i < m.rows_; i++)
-            delete m(i, j);
+for (int j = 0; j < m.cols_; j++)
+for (int i = 0; i < m.rows_; i++)
+delete m(i, j);
 }
+
 
 template<class T>
 int Matrix<T>::rows()
@@ -755,13 +869,14 @@ void Matrix<T>::print()
     {
         for (int i = 0; i < rows_; i++)
         {
-            if (m(i,j)==nullptr)
+            if (m(i, j) == nullptr)
                 cout << " ";
             else
             {
                 if ((*m(i, j)).is_on_bridge)
-                        cout << '.';
+                    cout << '.';
                 else
+                
                     cout << 'o';
             }
         }
@@ -773,21 +888,21 @@ char left(int x, int y)
 {
     if (x == 0)
         return '.';
-    return hashdot[x - 1][y];
+    return hash_dot(x - 1, y);
 }
 
 char up(int x, int y)
 {
     if (y == 0)
         return '.';
-    return hashdot[x][y - 1];
+    return hash_dot(x, y - 1);
 }
 
 char upleft(int x, int y)
 {
     if (y == 0 || x == 0)
         return '.';
-    return hashdot[x - 1][y - 1];
+    return hash_dot(x - 1, y - 1);
 }
 
 template<class T>
@@ -879,22 +994,22 @@ void Matrix<T>::enumerateBuildings()
     bool go_out = true;
     int r = m.rows_;
     int c = m.cols_;
+    max_bid = 0;
     int i = 0;
     while (m.cols_ != 0)
     {
         while (m.rows_ != 0)
         {
-            cout << endl;
             if ((*it) != nullptr)
-                if ((*it)->bid == 0)    
+                if ((*it)->bid == 0)
                 {
                     start = it;
                     max_bid++;
-                    int count = 0;            // For knowing that it came to the beginning again.
+                    int count = 0;            /* For knowing that it came to the beginning again. */
                     while (count != 2)
                     {
                         (*it)->bid = max_bid;
-                      
+
                         switch ((*it)->type)
                         {
                         case inside:
@@ -904,21 +1019,20 @@ void Matrix<T>::enumerateBuildings()
                             it.move_Clockwise_From_Wall();
                             break;
                         case corner:
-                            if (it != start)   //Still it haven't come to the beginning.
+                            if (it != start)    /* Still it haven't come to the beginning. */
                                 switch ((**it).prev_direction)
                                 {
-                                case Right:  it.down();  (**it).prev_direction = Down;   break;
-                                case Left:   it.up();    (**it).prev_direction = Up;     break;
-                                case Down:   it.left();  (**it).prev_direction = Left;   break;
-                                case Up:     it.right(); (**it).prev_direction = Right;  break;
-                                }                                                                                                        
-                            else                //When it is at the beginning of building.(prev_direction=-1)
+                                case Up:     it.move_right();  (**it).prev_direction = Right;  break;
+                                case Down:   it.move_left();  (**it).prev_direction = Left;   break;
+                                case Left:   it.move_up();  (**it).prev_direction = Up;     break;
+                                case Right:  it.move_down();  (**it).prev_direction = Down;   break;
+                                }
+                            else                /* When it is at the beginning of building.(prev_direction=-1) */
                             {
-                                cout << "it is at the beginning" << endl;
                                 (**it).prev_direction = None;
                                 if (count == 0)
                                 {
-                                    it.right();
+                                    it.move_right();
                                     (**it).prev_direction = Right;
                                 }
                                 count++;
@@ -927,80 +1041,87 @@ void Matrix<T>::enumerateBuildings()
                         case corner_inner:
                             switch ((**it).prev_direction)
                             {
-                            case Right:  corner_inners.push_back(make_pair((*it), Right));  it.up();    (**it).prev_direction  = Up;    break;
-                            case Left:                                                      it.down();  (**it).prev_direction = Down;   break;
-                            case Down:   corner_inners.push_back(make_pair((*it), Down));   it.right(); (**it).prev_direction  = Right; break;
-                            case Up:                                                        it.left();  (**it).prev_direction = Left;   break;
+                            case Up:
+                                it.move_left();
+                                (**it).prev_direction = Left;
+                                break;
+                            case Down:
+                                if (is_symmetric_corner_inner(it))
+                                    symmetric_corner_inners.push_back(make_pair((*it), Down));
+                                it.move_right(); (**it).prev_direction = Right;
+                                break;
+                            case Left:
+                                it.move_down();
+                                (**it).prev_direction = Down;
+                                break;
+                            case Right:
+                                if (is_symmetric_corner_inner(it))
+                                    symmetric_corner_inners.push_back(make_pair((*it), Right));
+                                it.move_up();
+                                (**it).prev_direction = Up;
+                                break;
                             }
                             break;
                         }
                     }
 
-                    for (unsigned int i = 0; i < corner_inners.size(); i++)
-                        m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prev_direction=corner_inners.at(i).second;
+                    for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
+                        m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
                 }
             m.rows_--;
             if (m.rows_ > 1)
-                it.right();
+                it.move_right();
         }
         m.rows_ = r;
         m.cols_--;
         if (m.cols_ != 0)
             it = it.update(0, ++i);
     }
-    //Recover m.rows_ and m.cols_ values.
+    /* Recover m.rows_ and m.cols_ values. */
     m.rows_ = r;
     m.cols_ = c;
 }
-
-Direction prev_end   = None;
-Direction prev_start = None;
-
-int count_of_bridges = 0;
-int non_connected_buildings=0;
 
 template<class T>
 void Matrix<T>::Circle()
 {
     int count;
     int r = 0;
-    
-   
+    radius = 0;
+
     Matrix<Vertex*>::iterator             circle_start;
+
     pair<Matrix<Vertex*>::iterator, char> it;
     pair<Matrix<Vertex*>::iterator, char> connectible;
     vector< Matrix<Vertex*>::iterator > bridge_starts;
     vector< Matrix<Vertex*>::iterator > bridge_ends;
-    it.first.set_iterator();
-    circle_start      = it.first;
-    connectible.first = circle_start;
-    int l = min(m.cols(),m.rows()) - 1;
-   
-     non_connected_buildings = max_bid;
-    while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid!=1)
-    {
 
-        while (radius != l && max_bid != 1)
+    it.first.set_iterator();
+    circle_start = it.first;
+    connectible.first = circle_start;
+    while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid != 1)
+    {
+        while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
             it.first = circle_start;
             radius++;
             count = 0;
             while (count != 2)
             {
-                connectible = find_Isolated_Building(it,(**it.first).bid);
-                if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid!=(**connectible.first).bid && (**it.first).bid!=0)
+                connectible = find_Isolated_Building(it, (**it.first).bid);
+                if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
+
                     bridge_starts.push_back(it.first);
                     bridge_ends.push_back(connectible.first);
                     connect_2_building(connectible, (**circle_start).bid);
-                    count    = 0;
-                    radius   = 1;
-                    for (unsigned int i = 0; i < corner_inners.size(); i++)
-                        m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->count_for_corner_inners = 0;
+                    count = 0;
+                    radius = 1;
+                    for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
+                        m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->count_for_corner_inners = 0;
                     it.first = circle_start;
                     max_bid--;
                     count_of_bridges++;
-                    non_connected_buildings--;
 
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
                         (**bridge_starts[i]).bridge_start = 0;
@@ -1008,23 +1129,29 @@ void Matrix<T>::Circle()
                     for (unsigned int i = 0; i < bridge_ends.size(); i++)
                         (**bridge_ends[i]).bridge_end = 0;
                 }
-                      
-                switch ((*it.first)->type)
-                {
-                case wall:
-                    it.first.move_From_Wall();
-                    break;
-                case corner:
-                    it.first.move_From_Corner(circle_start, count);
-                    break;
-                case corner_inner:
-                    it.first.move_Clockwise_From_Corner_Inner();
-                    break;
-                }
+                if (max_bid != 1)
+
+                    switch ((*it.first)->type)
+                    {
+                    case wall:
+                        it.first.move_From_Wall();
+                        break;
+                    case corner:
+                        it.first.move_From_Corner(circle_start, count);
+                        break;
+                    case corner_inner:
+                        it.first.move_Clockwise_From_Corner_Inner();
+                        break;
+                    }
+                else
+                    count = 2;
             }
 
-            for (unsigned int i = 0; i < corner_inners.size(); i++)
-                m(corner_inners.at(i).first->x, corner_inners.at(i).first->y)->prev_direction = corner_inners.at(i).second;
+            for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
+                m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
+
+            for (unsigned int i = 0; i < bridge_starts.size(); i++)
+                (**bridge_starts[i]).bridge_start = 0;
         }
 
         if (max_bid != 1)
@@ -1036,5 +1163,4 @@ void Matrix<T>::Circle()
         }
     }
 }
-
 #endif
