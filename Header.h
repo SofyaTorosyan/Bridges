@@ -1163,4 +1163,18 @@ void Matrix<T>::Circle()
         }
     }
 }
+
+void clean_all()
+{
+
+    for (int j = 0; j < m.cols(); j++)
+        for (int i = 0; i < m.rows(); i++)
+            m(i, j) = nullptr;
+    symmetric_corner_inners.clear();
+    prev_bridge_directions.clear();
+    prev_end = None;
+    prev_start = None;
+    count_of_bridges = 0;
+    non_connected_buildings = 0;
+}
 #endif
