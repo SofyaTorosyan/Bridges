@@ -72,12 +72,12 @@ public:
 
     void Random_Generate()
     {
-        char str[4] = { '.','#','.','.' };
+        char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
         for (int j = 0; j < width_; j++)
         {
             for (int i = 0; i < length_; i++)
             {
-                hash_dot_[i][j] = str[rand() % 4];
+                hash_dot_[i][j] = str[rand() % 20];
                 cout << hash_dot_[i][j];
             }
             cout << endl;
