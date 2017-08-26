@@ -12,7 +12,7 @@ using namespace std;
 
 struct Point
 {
-    int x;
+    int x; 
     int y;
 };
 
@@ -41,17 +41,68 @@ struct Vertex : Point
     Vertex* move_left();
     Vertex* move_down();
     Vertex* move_right();
-    int bid                      = 0;
-    int bridge_end               = 0;
-    int bridge_start             = 0;
+    int bid                      = 0;  
     int  count_for_corner_inners = 0;
-    bool is_on_bridge            = false;
-    bool is_on_bridge_end        = false;
-    bool is_on_bridge_start      = false;
+    bool is_on_bridge = true;
     Type type                    = Type::corner;
     Direction prev_direction     = None; 
-    Direction bridge_direction   = None;
 };
+
+
+struct Bridge: Point
+{
+
+    int bid                    = 0;
+    int bridge_end             = 0;
+    int bridge_start           = 0;
+    bool is_on_bridge          = true;
+    bool is_on_bridge_end      = false;
+    bool is_on_bridge_start    = false;
+    Direction prev_end         = None;
+    Direction prev_start       = None;
+    Direction bridge_direction = None;
+    Direction prev_direction   = None;
+    vector<pair<Bridge, Direction>>     prev_bridge_directions;
+
+    
+    Bridge& initialize(int x_, int y_)
+    {
+        x_ = x;
+        y_ = y;
+        return *this;
+    }
+    Bridge() 
+    {
+        x = 0;
+        y = 0;
+    }
+
+    Bridge& move_left()
+    {
+        --(*this).x;
+        return  *this;
+    }
+
+    Bridge& move_right()
+    {
+        ++(*this).y;
+        return  *this;
+    }
+
+    Bridge& move_down()
+    {
+        ++(*this).y;
+        return  *this;
+    }
+
+    Bridge& move_up()
+    {
+        --(*this).y;
+        return  *this;
+    }
+};
+
+vector<Bridge> bridge_vertexes;
 
 class HashDot
 {
@@ -164,6 +215,12 @@ public:
 
         iterator(bool b) : is_on_building_(b) { }
 
+        iterator& get(int x, int y)
+        {
+            x_ = x;
+            y_ = y;
+            return *this;
+        }
         int x() { return x_; }
 
         int y() { return y_; }
@@ -261,23 +318,39 @@ public:
             {
             case Right:
                 move_left();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                bridge_v.move_left();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                {
                     move_left();
+                    bridge_v.move_left();
+                }
                 break;
             case Left:
                 move_right();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                bridge_v.move_right();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                {
                     move_right();
+                    bridge_v.move_right();
+                }
                 break;
             case Up:
                 move_down();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                bridge_v.move_down();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                {
                     move_down();
+                    bridge_v.move_down();
+                }
                 break;
             case Down:
                 move_up();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
+                bridge_v.move_up();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                {
                     move_up();
+                    bridge_v.move_up();
+                }
                 break;
             }
         }
@@ -286,25 +359,25 @@ public:
         {
             switch (bridge_direction)
             {
-            case Right:
-                move_right();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
-                    move_right();
+            case Right:              
+                bridge_v.move_right();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                    bridge_v.move_right();
                 break;
             case Left:
-                move_left();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
-                    move_left();
+                bridge_v.move_left();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                    bridge_v.move_left();
                 break;
             case Up:
-                move_up();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
-                    move_up();
+                bridge_v.move_up();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                    bridge_v.move_up();
                 break;
             case Down:
-                move_down();
-                while (!(**this)->is_on_bridge_end && !(**this)->is_on_bridge_start)
-                    move_down();
+                bridge_v.move_down();
+                while (!bridge_v.is_on_bridge_end && !bridge_v.is_on_bridge_start)
+                    bridge_v.move_down();
             }
         }
 
@@ -321,42 +394,42 @@ public:
 
         void move_From_Wall()
         {
-            if (!(**this)->is_on_bridge_start)
+            if (!bridge_v.is_on_bridge_start)
             {
-                if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
+                if (bridge_v.is_on_bridge_end && ++bridge_v.bridge_end == 2)
                 {
-                    (**this)->bridge_end = 0;
-                    move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
+                    bridge_v.bridge_end = 0;
+                    move_Opposite_To_Bridge_Direction(bridge_v.bridge_direction);
                 }
                 else
                     move_Clockwise_From_Wall();
             }
             else
             {
-                if ((**this)->is_on_bridge_start && (++(**this)->bridge_start == 1))
-                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
+                if (bridge_v.is_on_bridge_start && (++bridge_v.bridge_start == 1))
+                    move_Towards_To_Bridge_Direction(bridge_v.bridge_direction);
                 else
                 {
-                    if ((**this)->bridge_start == 2)
+                    if (bridge_v.bridge_start == 2)
                         move_Clockwise_From_Wall();
                     else
-                        move_Opposite_To_Bridge_Direction(find(prev_bridge_directions, *this));
+                        move_Opposite_To_Bridge_Direction(find(bridge_v.prev_bridge_directions, *this));
                 }
             }
         }
 
         void move_From_Corner(iterator start, int& count)
-        {
-            if (!(**this)->is_on_bridge_start)
+        {  
+            if (!bridge_v.is_on_bridge_start)
             {
-                if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
+                if (bridge_v.is_on_bridge_end && ++bridge_v.bridge_end == 2)
                 {
-                    (**this)->bridge_end = 0;
-                    move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
+                    bridge_v.bridge_end = 0;
+                    move_Opposite_To_Bridge_Direction(bridge_v.bridge_direction);
                 }
                 else
                 {
-                    if ((**this)->is_on_bridge_end && (**this)->prev_direction == None)
+                    if (bridge_v.is_on_bridge_end && (**this)->prev_direction == None)
                         move_Clockwise_From_Corner(start, count);
                     else
                         move_Clockwise_From_Corner(start, count);
@@ -365,14 +438,14 @@ public:
             }
             else
             {
-                if (++(**this)->bridge_start == 1)
-                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
+                if (++bridge_v.bridge_start == 1)
+                    move_Towards_To_Bridge_Direction(bridge_v.bridge_direction);
                 else
                 {
-                    if ((**this)->bridge_start == 2)
+                    if (bridge_v.bridge_start == 2)
                         move_Clockwise_From_Corner(start, count);
                     else
-                        move_Opposite_To_Bridge_Direction(find(prev_bridge_directions, *this));
+                        move_Opposite_To_Bridge_Direction(find(bridge_v.prev_bridge_directions, *this));
                 }
             }
         }
@@ -480,11 +553,8 @@ HashDot  hash_dot(10, 10);
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
-vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
-Direction prev_end          = None;
-Direction prev_start        = None;
-int count_of_bridges        = 0;
-int non_connected_buildings = 0;
+int count_of_bridges        = 0;                                          
+//int non_connected_buildings = 0;
 
 bool contains(Vertex* v)
 {
@@ -500,13 +570,14 @@ bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
 
 }
 
-Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions, Matrix<Vertex*>::iterator it)
+Direction find(vector<pair<Bridge, Direction>> prev_bridge_directions, Matrix<Vertex*>::iterator it)
 {
     for (unsigned int i = 0; i < prev_bridge_directions.size(); i++)
-        if (prev_bridge_directions[i].first == it)
+        if (prev_bridge_directions[i].first.x == it.x() && prev_bridge_directions[i].first.y== it.y())
             return prev_bridge_directions[i].second;
 }
 
+Bridge bridge_v;
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
 {
     int i = 0;
@@ -539,112 +610,121 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
     for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
         m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
 
+   
+    bridge_v.initialize(connectible.first.x(), connectible.first.y());
+    bridge_vertexes.push_back(bridge_v);
+
     switch (connectible.second)
     {
     case 'R':
-        (**connectible.first).is_on_bridge_end = true;
-        if ((**connectible.first).is_on_bridge_start)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_start)
         {
-            (**connectible.first).is_on_bridge_start = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_start = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Right;
-        connectible.first.move_left();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        bridge_v.bridge_direction = Right;
+        bridge_v.move_left();
+        bridge_vertexes.push_back(bridge_v);
+        while ((!bridge_v.is_on_bridge_start && !bridge_v.is_on_bridge_end && connectible.first.get(bridge_v.x, bridge_v.y) == nullptr))
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            (*v).is_on_bridge = true;
             m(connectible.first.x(), connectible.first.y()) = v;
-            (*connectible.first)->is_on_bridge = true;
-
-            m(connectible.first.x(), connectible.first.y())->prev_direction = Right;
-            connectible.first.move_left();
+            bridge_v.prev_direction = Right;
+            bridge_v.move_left();
+            bridge_vertexes.push_back(bridge_v);
         }
-        (**connectible.first).is_on_bridge_start = true;
-        if ((**connectible.first).is_on_bridge_end)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_end)
         {
-            (**connectible.first).is_on_bridge_end = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_end = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Right;
+        bridge_v.bridge_direction = Right;
         break;
+
     case 'L':
-        (**connectible.first).is_on_bridge_end = true;
-        if ((**connectible.first).is_on_bridge_start)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_start)
         {
-            (**connectible.first).is_on_bridge_start = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_start = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Left;
-        connectible.first.move_right();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        bridge_v.bridge_direction = Left;
+        bridge_v.move_right();
+        bridge_vertexes.push_back(bridge_v);
+        while ((!bridge_v.is_on_bridge_start && !bridge_v.is_on_bridge_end && connectible.first.get(bridge_v.x, bridge_v.y) == nullptr))
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            (*v).is_on_bridge = true;
             m(connectible.first.x(), connectible.first.y()) = v;
-            (*connectible.first)->is_on_bridge = true;
-
-            m(connectible.first.x(), connectible.first.y())->prev_direction = Left;
-            connectible.first.move_right();
+            bridge_v.prev_direction = Left;
+            bridge_v.move_right();
+            bridge_vertexes.push_back(bridge_v);
         }
-        (**connectible.first).is_on_bridge_start = true;
-        if ((**connectible.first).is_on_bridge_end)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_end)
         {
-            (**connectible.first).is_on_bridge_end = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_end = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Left;
+        bridge_v.bridge_direction = Left;
         break;
     case 'U':
-        (**connectible.first).is_on_bridge_end = true;
-        if ((**connectible.first).is_on_bridge_start)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_start)
         {
-            (**connectible.first).is_on_bridge_start = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_start = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Up;
-        connectible.first.move_down();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        bridge_v.bridge_direction = Right;
+        bridge_v.move_down();
+        bridge_vertexes.push_back(bridge_v);
+        while ((!bridge_v.is_on_bridge_start && !bridge_v.is_on_bridge_end && connectible.first.get(bridge_v.x, bridge_v.y) == nullptr))
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            (*v).is_on_bridge = true;
             m(connectible.first.x(), connectible.first.y()) = v;
-            (*connectible.first)->is_on_bridge = true;
-
-            m(connectible.first.x(), connectible.first.y())->prev_direction = Up;
-            connectible.first.move_down();
+            bridge_v.prev_direction = Up;
+            bridge_v.move_down();
+            bridge_vertexes.push_back(bridge_v);
         }
-        (**connectible.first).is_on_bridge_start = true;
-        if ((**connectible.first).is_on_bridge_end)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_end)
         {
-            (**connectible.first).is_on_bridge_end = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_end = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Up;
+        bridge_v.bridge_direction = Up;
         break;
 
     case 'D':
-        (**connectible.first).is_on_bridge_end = true;
-        if ((**connectible.first).is_on_bridge_start)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_start)
         {
-            (**connectible.first).is_on_bridge_start = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_start = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Down;
-        connectible.first.move_up();
-        while (*connectible.first == nullptr || (*connectible.first!=nullptr && (**connectible.first).is_on_bridge==true))
+        bridge_v.bridge_direction = Down;
+        bridge_v.move_up();
+        bridge_vertexes.push_back(bridge_v);
+        while ((!bridge_v.is_on_bridge_start && !bridge_v.is_on_bridge_end && connectible.first.get(bridge_v.x, bridge_v.y) == nullptr))
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
+            (*v).is_on_bridge = true;
             m(connectible.first.x(), connectible.first.y()) = v;
-            (*connectible.first)->is_on_bridge = true;
-
-            m(connectible.first.x(), connectible.first.y())->prev_direction = Down;
-            connectible.first.move_up();
+            bridge_v.prev_direction = Down;
+            bridge_v.move_up();
+            bridge_vertexes.push_back(bridge_v);
         }
-        (**connectible.first).is_on_bridge_start = true;
-        if ((**connectible.first).is_on_bridge_end)
+        bridge_v.is_on_bridge_end = true;
+        if (bridge_v.is_on_bridge_end)
         {
-            (**connectible.first).is_on_bridge_end = false;
-            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+            bridge_v.is_on_bridge_end = false;
+            bridge_v.prev_bridge_directions.push_back(make_pair(bridge_v, bridge_v.bridge_direction));
         }
-        (**connectible.first).bridge_direction = Down;
+        bridge_v.bridge_direction = Down;
         break;
     }
 }
@@ -1090,11 +1170,10 @@ void Matrix<T>::Circle()
     radius = 0;
 
     Matrix<Vertex*>::iterator             circle_start;
-
     pair<Matrix<Vertex*>::iterator, char> it;
     pair<Matrix<Vertex*>::iterator, char> connectible;
-    vector< Matrix<Vertex*>::iterator > bridge_starts;
-    vector< Matrix<Vertex*>::iterator > bridge_ends;
+    vector<Bridge > bridge_starts;      
+    vector< Bridge > bridge_ends;        
 
     it.first.set_iterator();
     circle_start = it.first;
@@ -1112,8 +1191,8 @@ void Matrix<T>::Circle()
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
 
-                    bridge_starts.push_back(it.first);
-                    bridge_ends.push_back(connectible.first);
+                    bridge_starts.push_back(bridge_v);
+                    bridge_ends.push_back(bridge_v);
                     connect_2_building(connectible, (**circle_start).bid);
                     count = 0;
                     radius = 1;
@@ -1123,14 +1202,15 @@ void Matrix<T>::Circle()
                     max_bid--;
                     count_of_bridges++;
 
-                    for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                        (**bridge_starts[i]).bridge_start = 0;
-
-                    for (unsigned int i = 0; i < bridge_ends.size(); i++)
-                        (**bridge_ends[i]).bridge_end = 0;
+                    for (unsigned int i = 0; i < bridge_starts.size(); i++)   // create and use clean () functions
+                        bridge_starts[i].bridge_start = 0;                // create and use clean () functions
+                                                                              // create and use clean () functions
+                    for (unsigned int i = 0; i < bridge_ends.size(); i++)     // create and use clean () functions
+                        bridge_ends[i].bridge_end = 0;                    // create and use clean () functions
                 }
                 if (max_bid != 1)
-
+                {
+                    bridge_v.initialize((*it.first)->x, (*it.first)->y);
                     switch ((*it.first)->type)
                     {
                     case wall:
@@ -1143,6 +1223,7 @@ void Matrix<T>::Circle()
                         it.first.move_Clockwise_From_Corner_Inner();
                         break;
                     }
+                }
                 else
                     count = 2;
             }
@@ -1150,8 +1231,8 @@ void Matrix<T>::Circle()
             for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
                 m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
 
-            for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                (**bridge_starts[i]).bridge_start = 0;
+            for (unsigned int i = 0; i < bridge_starts.size(); i++)    // create clean_starts() function  in Bridge 
+                bridge_starts[i].bridge_start = 0;                 // create clean_starts() function  in Bridge 
         }
 
         if (max_bid != 1)
@@ -1171,10 +1252,11 @@ void clean_all()
         for (int i = 0; i < m.rows(); i++)
             m(i, j) = nullptr;
     symmetric_corner_inners.clear();
-    prev_bridge_directions.clear();
-    prev_end = None;
-    prev_start = None;
+    bridge_v.prev_bridge_directions.clear();
+    bridge_vertexes.clear();
+    bridge_v.prev_end = None;
+    bridge_v.prev_start = None;
     count_of_bridges = 0;
-    non_connected_buildings = 0;
+   // non_connected_buildings = 0;
 }
 #endif
