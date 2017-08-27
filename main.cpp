@@ -27,16 +27,25 @@ int main()
             cout << '\n';
             y++;
         }
+
         m.enumerateBuildings();
         m.Circle();
-
         cout << "City with bridges is \n";
         m.print();
         cout << "Count of bridges is " << count_of_bridges << endl;
 
         hash_dot.fileIn.clear();
-        clean_all();
-       
+
+        //Clean all data structures.
+        for (int j = 0; j < m.cols(); j++)
+            for (int i = 0; i < m.rows(); i++)
+                m(i, j) = nullptr;
+        symmetric_corner_inners.clear();
+        prev_bridge_directions.clear();
+        prev_end = None;
+        prev_start = None;
+        count_of_bridges = 0;
+        non_connected_buildings = 0;
     }
 
     std::system("pause");
