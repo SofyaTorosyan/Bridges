@@ -37,10 +37,6 @@ struct Vertex : Point
 {
     Vertex(int, int);
     Vertex() { }
-    Vertex* move_up();
-    Vertex* move_left();
-    Vertex* move_down();
-    Vertex* move_right();
     int bid = 0;
     int bridge_end = 0;
     int bridge_start = 0;
@@ -777,58 +773,6 @@ Vertex::Vertex(int a, int b)
     x = a;
     y = b;
     bid = 0;
-}
-
-Vertex* Vertex::move_up()
-{
-    if ((*this).y != 0)
-    {
-        Vertex* vup = this;
-        (*vup).x = (*this).x;
-        (*vup).y = (*this).y - 1;
-        if (contains(vup))
-            return vup;
-    }
-    return nullptr;
-}
-
-Vertex* Vertex::move_left()
-{
-    if ((*this).x != 0)
-    {
-        Vertex* vleft = this;
-        (*vleft).x = (*this).x - 1;
-        (*vleft).y = (*this).y;
-        if (contains(vleft))
-            return vleft;
-    }
-    return nullptr;
-}
-
-Vertex* Vertex::move_down()
-{
-    if ((*this).y != m.cols() + 1)
-    {
-        Vertex* vdown = this;
-        (*vdown).y = (*this).y + 1;
-        (*vdown).x = (*this).x;
-        if (contains(vdown))
-            return vdown;
-    }
-    return  nullptr;
-}
-
-Vertex* Vertex::move_right()
-{
-    if ((*this).x != m.rows())
-    {
-        Vertex* vright = this;
-        (*vright).x = (*this).x + 1;
-        (*vright).y = (*this).y;
-        if (contains(vright))
-            return vright;
-    }
-    return  nullptr;
 }
 
 template<class T>
