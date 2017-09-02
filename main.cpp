@@ -5,9 +5,7 @@ int main()
     string line;
     int    x = 0;
     int    y = 0;
-    int a;
-
-    while (cin >> a)
+    while (cin.get() != '0')
     {
         y = 0;
         cout << "City with hash dot\n";
@@ -24,29 +22,16 @@ int main()
                     m.C4V(x, y);
                 x++;
             }
-            cout << '\n';
             y++;
         }
-
+        cout << endl;
         m.enumerateBuildings();
         m.Circle();
-        cout << "City with bridges is \n";
+        cout << "City with bridges is\n";
         m.print();
-        cout << "Count of bridges is " << count_of_bridges << endl;
-
+        cout << "------------------------- \nCount of bridges is " << count_of_bridges<<"\n-------------------------" << endl;
         hash_dot.fileIn.clear();
-
-        //Clean all data structures.
-        for (int j = 0; j < m.cols(); j++)
-            for (int i = 0; i < m.rows(); i++)
-                m(i, j) = nullptr;
-        symmetric_corner_inners.clear();
-        prev_bridge_directions.clear();
-        prev_end = None;
-        prev_start = None;
-        count_of_bridges = 0;
-        non_connected_buildings = 0;
+        clean_all();
     }
-
     std::system("pause");
 }

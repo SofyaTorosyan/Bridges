@@ -37,16 +37,20 @@ struct Vertex : Point
 {
     Vertex(int, int);
     Vertex() { }
-    int bid = 0;
-    int bridge_end = 0;
-    int bridge_start = 0;
+    Vertex* move_up   ();
+    Vertex* move_left ();
+    Vertex* move_down ();
+    Vertex* move_right();
+    int bid                      = 0;
+    int bridge_end               = 0;
+    int bridge_start             = 0;
     int  count_for_corner_inners = 0;
-    bool is_on_bridge = false;
-    bool is_on_bridge_end = false;
-    bool is_on_bridge_start = false;
-    Type type = Type::corner;
-    Direction prev_direction = None;
-    Direction bridge_direction = None;
+    bool is_on_bridge            = false;
+    bool is_on_bridge_end        = false;
+    bool is_on_bridge_start      = false;
+    Type type                    = Type::corner;
+    Direction prev_direction     = None;
+    Direction bridge_direction   = None;
 };
 
 class HashDot
@@ -154,8 +158,8 @@ public:
     {
     public:
         using vertex_pointer = T;
-        using reference = T&;
-        using pointer = T*;
+        using reference      = T&;
+        using pointer        = T*;
         iterator() = default;
 
         iterator(bool b) : is_on_building_(b) { }
@@ -308,10 +312,10 @@ public:
         {
             switch ((**this)->prev_direction)
             {
-            case Up:    move_up();  (**this)->prev_direction = Up;    break;
+            case Up:    move_up();    (**this)->prev_direction = Up;    break;
             case Down:  move_down();  (**this)->prev_direction = Down;  break;
             case Left:  move_left();  (**this)->prev_direction = Left;  break;
-            case Right: move_right();  (**this)->prev_direction = Right; break;
+            case Right: move_right(); (**this)->prev_direction = Right; break;
             }
         }
 
@@ -380,9 +384,9 @@ public:
                 if ((*this) != start)
                     switch ((**this)->prev_direction)
                     {
-                    case Up:    move_right();  break;
+                    case Up:    move_right(); break;
                     case Down:  move_left();  break;
-                    case Left:  move_up();  break;
+                    case Left:  move_up();    break;
                     case Right: move_down();  break;
                     }
                 else
@@ -390,9 +394,9 @@ public:
                     if (++count == 1)
                         switch ((**this)->prev_direction)
                         {
-                        case Up:    move_right();  break;
+                        case Up:    move_right(); break;
                         case Down:  move_left();  break;
-                        case Left:  move_up();  break;
+                        case Left:  move_up();    break;
                         case Right: move_down();  break;
                         }
                 }
@@ -459,7 +463,7 @@ public:
         int y_ = 0;
         Matrix<T>& m_ = m;
         bool is_on_building_ = false;
-        Direction prevmove_ = None;
+        Direction prevmove_  = None;
     };
 
 private:
@@ -489,8 +493,8 @@ bool contains(Vertex* v)
 
 bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
 {
-    if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
-        || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
+    if ((hash_dot((**vertex).x,     (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
+     || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x,     (**vertex).y) == '.'))
         return true;
     return false;
 
@@ -775,6 +779,58 @@ Vertex::Vertex(int a, int b)
     bid = 0;
 }
 
+Vertex* Vertex::move_up()
+{
+    if ((*this).y != 0)
+    {
+        Vertex* vup = this;
+        (*vup).x = (*this).x;
+        (*vup).y = (*this).y - 1;
+        if (contains(vup))
+            return vup;
+    }
+    return nullptr;
+}
+
+Vertex* Vertex::move_left()
+{
+    if ((*this).x != 0)
+    {
+        Vertex* vleft = this;
+        (*vleft).x = (*this).x - 1;
+        (*vleft).y = (*this).y;
+        if (contains(vleft))
+            return vleft;
+    }
+    return nullptr;
+}
+
+Vertex* Vertex::move_down()
+{
+    if ((*this).y != m.cols() + 1)
+    {
+        Vertex* vdown = this;
+        (*vdown).y = (*this).y + 1;
+        (*vdown).x = (*this).x;
+        if (contains(vdown))
+            return vdown;
+    }
+    return  nullptr;
+}
+
+Vertex* Vertex::move_right()
+{
+    if ((*this).x != m.rows())
+    {
+        Vertex* vright = this;
+        (*vright).x = (*this).x + 1;
+        (*vright).y = (*this).y;
+        if (contains(vright))
+            return vright;
+    }
+    return  nullptr;
+}
+
 template<class T>
 Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 {
@@ -808,7 +864,6 @@ int Matrix<T>::cols()
 template<class T>
 void Matrix<T>::print()
 {
-    cout << "City without bridges" << '\n';
     for (int j = 0; j < cols_; j++)
     {
         for (int i = 0; i < rows_; i++)
@@ -966,9 +1021,9 @@ void Matrix<T>::enumerateBuildings()
                             if (it != start)    /* Still it haven't come to the beginning. */
                                 switch ((**it).prev_direction)
                                 {
-                                case Up:     it.move_right();  (**it).prev_direction = Right;  break;
+                                case Up:     it.move_right(); (**it).prev_direction = Right;  break;
                                 case Down:   it.move_left();  (**it).prev_direction = Left;   break;
-                                case Left:   it.move_up();  (**it).prev_direction = Up;     break;
+                                case Left:   it.move_up();    (**it).prev_direction = Up;     break;
                                 case Right:  it.move_down();  (**it).prev_direction = Down;   break;
                                 }
                             else                /* When it is at the beginning of building.(prev_direction=-1) */
@@ -1034,7 +1089,6 @@ void Matrix<T>::Circle()
     radius = 0;
 
     Matrix<Vertex*>::iterator             circle_start;
-
     pair<Matrix<Vertex*>::iterator, char> it;
     pair<Matrix<Vertex*>::iterator, char> connectible;
     vector< Matrix<Vertex*>::iterator > bridge_starts;
@@ -1106,5 +1160,19 @@ void Matrix<T>::Circle()
             radius = 0;
         }
     }
+
+}
+
+void clean_all()
+{
+    for (int j = 0; j < m.cols(); j++)
+        for (int i = 0; i < m.rows(); i++)
+            m(i, j) = nullptr;
+    symmetric_corner_inners.clear();
+    prev_bridge_directions.clear();
+    count_of_bridges        = 0;
+    non_connected_buildings = 0;
+    prev_end                = None;
+    prev_start              = None;
 }
 #endif
