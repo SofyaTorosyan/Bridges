@@ -56,18 +56,16 @@ private:
     int    length_;
     int    width_;
 public:
-    fstream fileIn;
-
     HashDot(int l, int w) : length_(l), width_(w)
     {
         hash_dot_ = new char*[length_];
         for (int i = 0; i < length_; i++)
             hash_dot_[i] = new char[width_];
-        fileIn.open("My_City.txt");
     }
 
     void Random_Generate()
     {
+        cout << "City with random hashdots\n";
         char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
         for (int j = 0; j < width_; j++)
         {
@@ -78,7 +76,6 @@ public:
             }
             cout << endl;
         }
-        Write_To_File();
     }
 
     int length()
@@ -96,42 +93,14 @@ public:
         return  hash_dot_[i][j];
     }
 
-    void Write_To_File()
-    {
-        if (!fileIn)
-            cout << "No file is found";
-
-        for (int j = 0; j < width_; j++)
-        {
-            for (int i = 0; i < length_; i++)
-                fileIn << hash_dot_[i][j];
-            fileIn << endl;
-        }
-    }
-
     int row_size()
     {
-        string line;
-        fileIn.open("My_City.txt");
-        if (!fileIn)
-            cout << "There is no file.";
-        fileIn.seekg(0, ios::beg);
-        getline(fileIn, line);
-        return line.size() + 1;
+        return length_ + 1;
     }
 
     int col_size()
     {
-        int count = 0;
-        string line;
-        fileIn.open("My_City.txt");
-        if (!fileIn)
-            cout << "There is no file";
-        fileIn.seekg(0, ios::beg);
-        while (getline(fileIn, line))
-            ++count;
-        fileIn.clear();
-        return count + 1;
+        return width_ + 1;
     }
 };
 
@@ -148,7 +117,9 @@ public:
     void print();
     void Circle();
     Vertex*& operator() (int, int);
+    void Create_Vertexes();
     void enumerateBuildings();
+  
 
     class iterator
     {
@@ -470,9 +441,9 @@ private:
     M    m_;
 };
 
-int radius = 0;
+int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(10, 10);
+HashDot  hash_dot(100, 40); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -808,6 +779,7 @@ int Matrix<T>::cols()
 template<class T>
 void Matrix<T>::print()
 {
+    cout << "City with bridges is\n";
     for (int j = 0; j < cols_; j++)
     {
         for (int i = 0; i < rows_; i++)
@@ -1105,6 +1077,16 @@ void Matrix<T>::Circle()
         }
     }
 
+}
+
+template<class T>
+void Matrix<T>::Create_Vertexes()
+{
+    for (int y = 0; y < hash_dot.width(); y++)
+        for (int x = 0; x < hash_dot.length(); x++)
+            if (hash_dot(x, y ) == '#')
+                m.C4V(x, y);
+    cout << endl;
 }
 
 void clean_all()

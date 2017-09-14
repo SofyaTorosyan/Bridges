@@ -2,36 +2,38 @@
 
 int main()
 {
-    string line;
     int    x = 0;
-    int    y = 0;
+    int    y;
     while (cin.get() != '0')
     {
         y = 0;
-        cout << "City with hash dot\n";
-        hash_dot.fileIn.seekg(0, ios::beg);
-        hash_dot.Random_Generate();
-        hash_dot.fileIn.seekg(0, ios::beg);
-
-        while (getline(hash_dot.fileIn, line))
-        {
-            x = 0;
-            for (char& c : line)
-            {
-                if (c == '#')
-                    m.C4V(x, y);
-                x++;
-            }
-            y++;
-        }
-        cout << endl;
-        m.enumerateBuildings();
-        m.Circle();
-        cout << "City with bridges is\n";
-        m.print();
+        hash_dot.Random_Generate   ();
+               m.Create_Vertexes   ();
+               m.enumerateBuildings();
+               m.Circle();
+               m.print ();
         cout << "------------------------- \nCount of bridges is " << count_of_bridges<<"\n-------------------------" << endl;
-        hash_dot.fileIn.clear();
         clean_all();
     }
     std::system("pause");
 }
+
+
+/*
+bool files_identical(std::string fileNameA, std::string fileNameB)
+{}
+
+int test_range(int a, int b)
+{
+    const std::string dirHDGold        = "../Tests/Hashdots_gold/";
+    const std::string dirConnected     = "../Tests/Connected/";
+    const std::string dirConnectedGold = "../Tests/Connected_gold/";
+
+    for (int i = a; i < b; i++)
+    {
+        const std::string HDFile = dirHDGold + "model_hashdot_" + std::string("i") + ".txt";
+
+
+    }
+}
+*/
