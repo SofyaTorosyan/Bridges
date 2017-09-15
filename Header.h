@@ -3,12 +3,30 @@
 
 #include <vector>
 #include <string>
+#include <chrono>
 #include <utility>   /* std::pair */
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 
 using namespace std;
+
+class Timer
+{
+private:
+    std::chrono::steady_clock::time_point start;
+public:
+    Timer()
+    {
+        cout << "Time counting was started \n";
+        start = std::chrono::steady_clock::now();
+    }
+    ~Timer()
+    {
+        auto end = std::chrono::steady_clock::now();
+        cout << "Time of sorting was " << std::chrono::duration_cast< std::chrono::seconds>(end - start).count() << " seconds";
+    }
+};
 
 struct Point
 {
@@ -62,7 +80,11 @@ public:
         for (int i = 0; i < length_; i++)
             hash_dot_[i] = new char[width_];
     }
-
+    
+    void f(Matrix<Vertex*>& m)
+    {
+        m.print();
+    }
     void Random_Generate()
     {
         cout << "City with random hashdots\n";
@@ -104,7 +126,6 @@ public:
     }
 };
 
-
 template<class T>
 class Matrix
 {
@@ -119,7 +140,6 @@ public:
     Vertex*& operator() (int, int);
     void Create_Vertexes();
     void enumerateBuildings();
-  
 
     class iterator
     {
