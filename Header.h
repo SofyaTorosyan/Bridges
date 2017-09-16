@@ -24,7 +24,7 @@ public:
     ~Timer()
     {
         auto end = std::chrono::steady_clock::now();
-        cout << "Time of sorting was " << std::chrono::duration_cast< std::chrono::seconds>(end - start).count() << " seconds";
+        cout << "\nTime  was " << std::chrono::duration_cast< std::chrono::milliseconds>(end - start).count() << " milliseconds\n";
     }
 };
 
@@ -70,21 +70,14 @@ struct Vertex : Point
 class HashDot
 {
 private:
-    char** hash_dot_;
+    vector<string> hash_dot_; // change to std::vector<std::string>
     int    length_;
     int    width_;
+    fstream fileIn;
 public:
-    HashDot(int l, int w) : length_(l), width_(w)
-    {
-        hash_dot_ = new char*[length_];
-        for (int i = 0; i < length_; i++)
-            hash_dot_[i] = new char[width_];
-    }
+    HashDot(int l, int w) : length_(l), width_(w)  
+    { }
     
-    void f(Matrix<Vertex*>& m)
-    {
-        m.print();
-    }
     void Random_Generate()
     {
         cout << "City with random hashdots\n";
@@ -98,6 +91,30 @@ public:
             }
             cout << endl;
         }
+    }
+
+    void Read_From_File()
+    {
+        resize();
+        if (!fileIn)
+            cout << "No file is found";
+        std::string line;
+        fileIn.seekg(0, ios::beg);
+        while (getline(fileIn, line));
+        {
+            hash_dot_.push_back(line);
+            cout << line; // create a separate function display();
+        }
+    }
+    
+    void resize()
+    { 
+        hash_dot_.clear();
+        fileIn.open("My_City.txt");
+        if (!fileIn) 
+            cout << "No file";
+        length_ = File_Length()-1;
+        width_  = File_Width ()-1;
     }
 
     int length()
@@ -123,6 +140,30 @@ public:
     int col_size()
     {
         return width_ + 1;
+    }
+
+    int File_Width()
+    {
+        int count = 0;
+        string line;
+        if (!fileIn)
+            cout << "There is no file";
+        fileIn.seekg(0, ios::beg);
+        while (getline(fileIn, line))
+            ++count;
+        fileIn.clear();
+        return count + 1;
+    }
+
+    int File_Length()
+    {
+        string line;
+       
+        if (!fileIn)
+            cout << "There is no file.";
+        fileIn.seekg(0, ios::beg);
+        getline(fileIn, line);
+        return line.size() + 1;
     }
 };
 
@@ -731,7 +772,6 @@ pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*
 }
 
 void find_new_building(Matrix<Vertex*>::iterator& it)
-
 {
     int bid = (**it).bid;
     int rows = (**it).x;
@@ -774,7 +814,6 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
         col.resize(cols_);
 }
 
-
 template<class T>
 Matrix<T>::~Matrix()
 {
@@ -782,7 +821,6 @@ Matrix<T>::~Matrix()
         for (int i = 0; i < m.rows_; i++)
             delete m(i, j);
 }
-
 
 template<class T>
 int Matrix<T>::rows()
@@ -1108,6 +1146,7 @@ void Matrix<T>::Create_Vertexes()
                 m.C4V(x, y);
     cout << endl;
 }
+
 
 void clean_all()
 {
