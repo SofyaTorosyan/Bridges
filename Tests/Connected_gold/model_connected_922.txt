@@ -1,0 +1,38 @@
+             oo      oo         oo     oo            ooooo            oo
+        oo...oo     ooooo       oo     oo.oo..oooo...ooooo     oo...oooo
+ oooo   oo          oo oooo      oo   oo  oo  oooo     oo....oooo   ooo 
+ oooo    .     oo        oo      oo   ooo  .     oo    oo    oo oo   oo 
+  oo     oo    oo         . oo ooo.oo  ooo oo    oo             oo      
+  oo   oooo    .      oo  oooooooo oo oooo oo        oo                 
+  .   ooo oo..oo  oo  oo.ooo  ooo  ooooo             oo                 
+  .   oooooo  oo.ooo  oo oo    oo oooo       oo      .                  
+  .   . oo       oo   .  oooo oo  oooo       oo  oo  .     oo     oo    
+ oo oo.           oo  oo oooo oo   .         . oooo.oo     oo     oo    
+ oo.ooo           oooooo ooo      oo      oo . oo   oo     .      .     
+     oo            ooo   ooo      oo.oo   oo oooooo  oo    oooooo.oo    
+             oo          .         . oo    oooooooo  oo    oooooo oo    
+             oo    oo oooo     oo ooo      oo    oo  ooo   oo   .       
+             .     oo.oooo     oooooo   oo  .      ooooo   oo   .    oo 
+ oo          .        .     oo  ooo     ooo .      ooo      oo  .    oo 
+ oo          .        .     oo.ooo      ooo.oo      ooo.oo..oo  .     . 
+  . oo   oo  .       oo        oo.       .  oo       oo oo      .     . 
+  . oooo.oo.oo       oooooo      oo      oo oo        .        oo     oo
+  .   oo  . oo..ooo    oooo      oo     ooo oo    oo  .        oo     oo
+  . oooo  .     oooo oooo        oo     ooo       oo  .           oo  oo
+  oooooo  oo     ooo ooo         oooooo.oo     oo .   oo          oooo. 
+  oooo  oooo    ooo.oooo     oo  oooooo        oooo...oooo         ooooo
+   oo.  oo     ooo ooo       oo  oooo .    oo    oo    ooo.oo     ooo oo
+   oo.  oo     oo  oo         oo oooo oooo.ooo   .    oo   oo     oo    
+    .oo     oo  .        oo   oo.oooo oooo  oo   .    oooo       oo     
+    .oo     oo..oo       oo...oo  .oo   ooo   oo .      oo      ooo.oo  
+    .oo         oo        .       .     ooo   oooo.oo    oo...oooo ooo  
+    .oo             ooo  oo      oo    oo      .oo oo    oo   ooo  oo   
+   oo               ooo..oo      oo    oo     oo        oo..oo          
+   oo                                         oo        oo  oo          
+
+
+ -----------------------
+ Number of bridges....142
+ Total length.........261
+ Disconnected groups..1
+ -----------------------

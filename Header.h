@@ -95,6 +95,7 @@ public:
 
     void Read_From_File()
     {
+     //   fileIn.seekg(0, ios::beg);
         resize();
         if (!fileIn)
             cout << "No file is found";
@@ -111,8 +112,9 @@ public:
     { 
         hash_dot_.clear();
         fileIn.open("My_City.txt");
-        if (!fileIn) 
-            cout << "No file";
+       if (!fileIn) 
+           cout << "No file";
+        fileIn.seekg(0, ios::beg);
         length_ = File_Length()-1;
         width_  = File_Width ()-1;
     }
@@ -157,6 +159,7 @@ public:
 
     int File_Length()
     {
+       // fileIn.seekg(0, ios::beg);
         string line;
        
         if (!fileIn)
