@@ -78,6 +78,10 @@ public:
     HashDot(int l, int w) : length_(l), width_(w)  
     { }
     
+    void clear()
+    {
+        hash_dot_.clear();
+    }
     string& Random_Generate_String(std:: string& line)
     {
         char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
@@ -1133,5 +1137,6 @@ void clean_all()
     non_connected_buildings = 0;
     prev_end                = None;
     prev_start              = None;
+    hash_dot.clear();
 }
 #endif
