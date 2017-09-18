@@ -70,14 +70,22 @@ struct Vertex : Point
 class HashDot
 {
 private:
-    vector<string> hash_dot_; // change to std::vector<std::string>
+    vector<string> hash_dot_; 
     int    length_;
     int    width_;
-    fstream fileIn;
+ 
 public:
     HashDot(int l, int w) : length_(l), width_(w)  
     { }
     
+   /* void Random_Generate_String(std:: string& line )
+    {
+        char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
+        for (int i = 0; i < length_; i++)
+            line[i] = str[rand() % 20];
+        
+    }
+
     void Random_Generate()
     {
         cout << "City with random hashdots\n";
@@ -86,39 +94,33 @@ public:
         {
             for (int i = 0; i < length_; i++)
             {
-                hash_dot_[i][j] = str[rand() % 20];
-                cout << hash_dot_[i][j];
+
+                hash_dot_.push_back(str[rand() % 20]);
+                cout << 
             }
             cout << endl;
         }
     }
+    */
 
-    void Read_From_File()
+    void Read_From_File(const std::string fileName = "My_City.txt")
     {
-     //   fileIn.seekg(0, ios::beg);
-        resize();
+        hash_dot_.clear();
+        std::ifstream fileIn(fileName);
         if (!fileIn)
-            cout << "No file is found";
+            cout << "No hashdot file " << fileName;
+
         std::string line;
-        fileIn.seekg(0, ios::beg);
-        while (getline(fileIn, line));
+        while (std::getline(fileIn, line))
         {
             hash_dot_.push_back(line);
-            cout << line; // create a separate function display();
+            cout << line << endl; // create a separate function display();
         }
-    }
-    
-    void resize()
-    { 
-        hash_dot_.clear();
-        fileIn.open("My_City.txt");
-       if (!fileIn) 
-           cout << "No file";
-        fileIn.seekg(0, ios::beg);
-        length_ = File_Length()-1;
-        width_  = File_Width ()-1;
-    }
 
+        length_ = hash_dot_.back().length();
+        width_  = hash_dot_.size();
+    }
+   
     int length()
     {
         return length_;
@@ -128,12 +130,12 @@ public:
     {
         return width_;
     }
-
+   
     char& operator()(int i, int j)
     {
         return  hash_dot_[i][j];
     }
-
+ 
     int row_size()
     {
         return length_ + 1;
@@ -142,31 +144,6 @@ public:
     int col_size()
     {
         return width_ + 1;
-    }
-
-    int File_Width()
-    {
-        int count = 0;
-        string line;
-        if (!fileIn)
-            cout << "There is no file";
-        fileIn.seekg(0, ios::beg);
-        while (getline(fileIn, line))
-            ++count;
-        fileIn.clear();
-        return count + 1;
-    }
-
-    int File_Length()
-    {
-       // fileIn.seekg(0, ios::beg);
-        string line;
-       
-        if (!fileIn)
-            cout << "There is no file.";
-        fileIn.seekg(0, ios::beg);
-        getline(fileIn, line);
-        return line.size() + 1;
     }
 };
 
@@ -1137,19 +1114,19 @@ void Matrix<T>::Circle()
             radius = 0;
         }
     }
-
 }
 
 template<class T>
 void Matrix<T>::Create_Vertexes()
 {
+    rows_ = hash_dot.length() + 1;
+    cols_ = hash_dot.width() + 1;
     for (int y = 0; y < hash_dot.width(); y++)
         for (int x = 0; x < hash_dot.length(); x++)
             if (hash_dot(x, y ) == '#')
                 m.C4V(x, y);
     cout << endl;
 }
-
 
 void clean_all()
 {
