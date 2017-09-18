@@ -78,31 +78,25 @@ public:
     HashDot(int l, int w) : length_(l), width_(w)  
     { }
     
-   /* void Random_Generate_String(std:: string& line )
+    string& Random_Generate_String(std:: string& line)
     {
         char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
         for (int i = 0; i < length_; i++)
-            line[i] = str[rand() % 20];
-        
+            line.push_back(str[rand() % 20]);
+        return line;
     }
 
     void Random_Generate()
     {
         cout << "City with random hashdots\n";
-        char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
         for (int j = 0; j < width_; j++)
-        {
-            for (int i = 0; i < length_; i++)
-            {
-
-                hash_dot_.push_back(str[rand() % 20]);
-                cout << 
-            }
-            cout << endl;
+        {  
+                string line;
+                hash_dot_.push_back(Random_Generate_String(line));
+                cout << line<< endl;
         }
     }
-    */
-
+    
     void Read_From_File(const std::string fileName = "My_City.txt")
     {
         hash_dot_.clear();
@@ -484,7 +478,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(100, 40); 
+HashDot  hash_dot(10, 10); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
