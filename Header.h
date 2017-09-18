@@ -133,7 +133,7 @@ public:
    
     char& operator()(int i, int j)
     {
-        return  hash_dot_[i][j];
+        return  hash_dot_[j][i];
     }
  
     int row_size()
