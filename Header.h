@@ -159,6 +159,7 @@ public:
     void Circle();
     Vertex*& operator() (int, int);
     void Create_Vertexes();
+    void Write_To_File(string);
     void enumerateBuildings();
 
     class iterator
@@ -833,6 +834,30 @@ void Matrix<T>::print()
             }
         }
         cout << '\n';
+    }
+}
+
+template<class T>
+void Matrix<T>::Write_To_File(string CFile)
+{
+    ofstream C_File;
+    C_File.open("CFile");
+    for (int j = 0; j < cols_; j++)
+    {
+        for (int i = 0; i < rows_; i++)
+        {
+            if (m(i, j) == nullptr)
+                fileOut << " ";
+            else
+            {
+                if ((*m(i, j)).is_on_bridge)
+                    fileOut << '.';
+                else
+
+                    fileOut << 'o';
+            }
+        }
+        fileOut << '\n';
     }
 }
 

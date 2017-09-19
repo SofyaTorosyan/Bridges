@@ -37,7 +37,7 @@ bool files_identical(std::string fileNameA, std::string fileNameB)
     return (a.str() == b.str());
 }
 
-/*
+
 int test_range(int a, int b)
 {
     const std::string dirHDGold        = "../Tests/Hashdots_gold/";
@@ -55,10 +55,10 @@ int test_range(int a, int b)
 
         ofstream C_File;
         C_File.open("CFile");
-
+        m.Write_To_File(CFile);
 
        // m.print();
 
     }
 }
-*/
+
