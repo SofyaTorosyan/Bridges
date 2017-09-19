@@ -104,6 +104,7 @@ public:
     
     void Read_From_File(const std::string fileName = "My_City.txt")
     {
+
         hash_dot_.clear();
         std::ifstream fileIn(fileName);
         if (!fileIn)
@@ -159,7 +160,7 @@ public:
     void Circle();
     Vertex*& operator() (int, int);
     void Create_Vertexes();
-    void Write_To_File(string);
+    void Write_To_File(ostream&);
     void enumerateBuildings();
 
     class iterator
@@ -838,13 +839,12 @@ void Matrix<T>::print()
 }
 
 template<class T>
-void Matrix<T>::Write_To_File(string CFile)
+void Matrix<T>::Write_To_File(ostream& fileOut)
 {
-    ofstream C_File;
-    C_File.open("CFile");
-    for (int j = 0; j < cols_; j++)
+  
+    for (int j = 0; j < m.cols(); j++)
     {
-        for (int i = 0; i < rows_; i++)
+        for (int i = 0; i < m.rows(); i++)
         {
             if (m(i, j) == nullptr)
                 fileOut << " ";
