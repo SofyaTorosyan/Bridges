@@ -6,6 +6,7 @@
 #include <chrono>
 #include <utility>   /* std::pair */
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 
@@ -482,7 +483,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(10, 10); 
+HashDot  hash_dot(100, 80); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
