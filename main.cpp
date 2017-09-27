@@ -16,6 +16,7 @@ int main()
         m.print();
         cout << "-----------------------\nNumber of bridges.... " << count_of_bridges << endl;
         cout << "Total length......... "                          << bridge_length    << endl;
+        cout << "Disconnected groups.. "                          << non_connected_buildings << "\n----------------------- \n";
         clean_all();
     }
     std::system("pause");

@@ -486,7 +486,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(8, 8); 
+HashDot  hash_dot(6, 6); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -1074,6 +1074,8 @@ void Matrix<T>::Circle()
     vector< Matrix<Vertex*>::iterator > bridge_starts;
     vector< Matrix<Vertex*>::iterator > bridge_ends;
 
+    bool changed = false;
+    non_connected_buildings = max_bid;
     it.first.set_iterator();
     circle_start = it.first;
     connectible.first = circle_start;
@@ -1081,14 +1083,17 @@ void Matrix<T>::Circle()
     {
         while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
+         //   changed = false;
             it.first = circle_start;
             radius++;
             count = 0;
             while (count != 2)
             {
+                changed = false;
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
+                    changed = true;
                     bridge_length += radius;
                     bridge_starts.push_back(it.first);
                     bridge_ends.push_back(connectible.first);
@@ -1099,8 +1104,9 @@ void Matrix<T>::Circle()
                         m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->count_for_corner_inners = 0;
                     it.first = circle_start;
                     max_bid--;
+                  //  non_connected_buildings--;
                     count_of_bridges++;
-                   
+
 
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
                         (**bridge_starts[i]).bridge_start = 0;
@@ -1135,12 +1141,18 @@ void Matrix<T>::Circle()
 
         if (max_bid != 1)
         {
+            if (changed)
+               max_bid--;
             find_new_building(it.first);
-            max_bid--;
+        
             circle_start = it.first;
             radius = 0;
         }
     }
+
+    if (non_connected_buildings != max_bid)
+            non_connected_buildings = max_bid - 1;
+
 }
 
 template<class T>
