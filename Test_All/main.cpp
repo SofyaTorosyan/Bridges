@@ -9,7 +9,7 @@ std::string strip_whitespaces(std::string s)
 bool files_identical(std::string fileNameA, std::string fileNameB)
 {
     std::ifstream A(fileNameA);
-    std::ifstream B(fileNameB);
+    std::ifstream B(fileNameB); 
 
     if (!A)
         cout << "Not A";
