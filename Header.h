@@ -6,6 +6,7 @@
 #include <chrono>
 #include <utility>   /* std::pair */
 #include <fstream>
+#include <cctype>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -160,7 +161,7 @@ public:
     void Circle();
     Vertex*& operator() (int, int);
     void Create_Vertexes();
-    void Write_To_File(ostream&);
+    void Write_To_File(const string);
     void enumerateBuildings();
 
     class iterator
@@ -175,7 +176,7 @@ public:
 
         int x() { return x_; }
 
-        int y() { return y_; }
+        int y() { return y_;  }
 
         void set_iterator()
         {
@@ -485,7 +486,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(100, 80); 
+HashDot  hash_dot(8, 8); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -493,6 +494,7 @@ vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
 Direction prev_end = None;
 Direction prev_start = None;
 int count_of_bridges = 0;
+int bridge_length    = 0;
 int non_connected_buildings = 0;
 
 bool contains(Vertex* v)
@@ -839,25 +841,25 @@ void Matrix<T>::print()
 }
 
 template<class T>
-void Matrix<T>::Write_To_File(ostream& fileOut)
+void Matrix<T>::Write_To_File(const string file_name)
 {
-  
+    ofstream B_File(file_name);
     for (int j = 0; j < m.cols(); j++)
     {
         for (int i = 0; i < m.rows(); i++)
         {
-            if (m(i, j) == nullptr)
-                fileOut << " ";
+            if (m(i, j) == nullptr) 
+                B_File << " ";
             else
             {
                 if ((*m(i, j)).is_on_bridge)
-                    fileOut << '.';
+                    B_File << '.';
                 else
 
-                    fileOut << 'o';
+                    B_File << 'o';
             }
         }
-        fileOut << '\n';
+        B_File << '\n';
     }
 }
 
@@ -1087,7 +1089,7 @@ void Matrix<T>::Circle()
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
-
+                    bridge_length += radius;
                     bridge_starts.push_back(it.first);
                     bridge_ends.push_back(connectible.first);
                     connect_2_building(connectible, (**circle_start).bid);
@@ -1098,6 +1100,7 @@ void Matrix<T>::Circle()
                     it.first = circle_start;
                     max_bid--;
                     count_of_bridges++;
+                   
 
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
                         (**bridge_starts[i]).bridge_start = 0;
@@ -1159,6 +1162,7 @@ void clean_all()
             m(i, j) = nullptr;
     symmetric_corner_inners.clear();
     prev_bridge_directions.clear();
+    bridge_length           = 0;
     count_of_bridges        = 0;
     non_connected_buildings = 0;
     prev_end                = None;
