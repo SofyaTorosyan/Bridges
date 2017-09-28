@@ -1,0 +1,18 @@
+ oo         
+ oo         
+  . oo      
+  . ooo     
+  .  ooo    
+  .   oo    
+ oo         
+ oo         
+         oo 
+         oo 
+            
+
+
+ -----------------------
+ Number of bridges....1
+ Total length.........5
+ Disconnected groups..3
+ -----------------------

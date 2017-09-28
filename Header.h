@@ -486,7 +486,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(6, 6); 
+HashDot  hash_dot(10, 10); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -861,6 +861,10 @@ void Matrix<T>::Write_To_File(const string file_name)
         }
         B_File << '\n';
     }
+
+    B_File << "-----------------------\nNumber of bridges.... " << count_of_bridges        << endl;
+    B_File << "Total length......... "                          << bridge_length           << endl;
+    B_File << "Disconnected groups.. "                          << non_connected_buildings << "\n----------------------- \n";
 }
 
 char left(int x, int y)
@@ -898,7 +902,7 @@ void Matrix<T>::C4V(int x, int y)
         v[0].type = wall;
         v[1].type = wall;
     }
-
+    
     if (up(x, y) == '#')
     {
         if ((*m(x + 1, y)).type == wall)

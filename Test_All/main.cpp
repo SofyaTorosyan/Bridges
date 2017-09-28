@@ -60,6 +60,6 @@ void test_range(int a, int b)
 
 int main()
 {
-    test_range(4, 5);
+    test_range(5, 6);
     std::system("pause");
 } 
