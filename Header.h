@@ -163,6 +163,7 @@ public:
     void Create_Vertexes();
     void Write_To_File(const string);
     void enumerateBuildings();
+    int Disconnected();
 
     class iterator
     {
@@ -841,6 +842,23 @@ void Matrix<T>::print()
 }
 
 template<class T>
+int Matrix<T>::Disconnected()
+{
+    int count = 1;
+    for (int j = 0; j < m.cols(); j++)
+    {
+        for (int i = 0; i < m.rows(); i++)
+        {
+            if (m(i, j) != nullptr)
+                if ((*m(i, j)).bid != count && (*m(i, j)).bid!=0)
+                    ++count;
+        }
+    }
+
+    return count;
+}
+
+template<class T>
 void Matrix<T>::Write_To_File(const string file_name)
 {
     ofstream B_File(file_name);
@@ -1078,7 +1096,6 @@ void Matrix<T>::Circle()
     vector< Matrix<Vertex*>::iterator > bridge_starts;
     vector< Matrix<Vertex*>::iterator > bridge_ends;
 
-    bool changed = false;
     non_connected_buildings = max_bid;
     it.first.set_iterator();
     circle_start = it.first;
@@ -1087,17 +1104,14 @@ void Matrix<T>::Circle()
     {
         while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
-         //   changed = false;
             it.first = circle_start;
             radius++;
             count = 0;
             while (count != 2)
             {
-                changed = false;
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
-                    changed = true;
                     bridge_length += radius;
                     bridge_starts.push_back(it.first);
                     bridge_ends.push_back(connectible.first);
@@ -1108,7 +1122,6 @@ void Matrix<T>::Circle()
                         m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->count_for_corner_inners = 0;
                     it.first = circle_start;
                     max_bid--;
-                  //  non_connected_buildings--;
                     count_of_bridges++;
 
 
@@ -1145,7 +1158,6 @@ void Matrix<T>::Circle()
 
         if (max_bid != 1)
         {
-            if (changed)
                max_bid--;
             find_new_building(it.first);
         
@@ -1154,9 +1166,7 @@ void Matrix<T>::Circle()
         }
     }
 
-    if (non_connected_buildings != max_bid)
-            non_connected_buildings = max_bid - 1;
-
+    non_connected_buildings = Disconnected();
 }
 
 template<class T>
