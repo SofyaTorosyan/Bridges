@@ -487,7 +487,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(10, 10); 
+HashDot  hash_dot(6, 6); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -845,17 +845,20 @@ template<class T>
 int Matrix<T>::Disconnected()
 {
     int count = 1;
+    bool no_building = false;
     for (int j = 0; j < m.cols(); j++)
     {
         for (int i = 0; i < m.rows(); i++)
         {
             if (m(i, j) != nullptr)
-                if ((*m(i, j)).bid != count && (*m(i, j)).bid!=0)
+            {
+                no_building = true;
+                if ((*m(i, j)).bid != count && (*m(i, j)).bid != 0)
                     ++count;
+            }
         }
     }
-
-    return count;
+    return  (no_building == true) ? count : --count;
 }
 
 template<class T>
@@ -1124,7 +1127,6 @@ void Matrix<T>::Circle()
                     max_bid--;
                     count_of_bridges++;
 
-
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
                         (**bridge_starts[i]).bridge_start = 0;
 
@@ -1165,7 +1167,6 @@ void Matrix<T>::Circle()
             radius = 0;
         }
     }
-
     non_connected_buildings = Disconnected();
 }
 
@@ -1186,8 +1187,9 @@ void clean_all()
     for (int j = 0; j < m.cols(); j++)
         for (int i = 0; i < m.rows(); i++)
             m(i, j) = nullptr;
+   
     symmetric_corner_inners.clear();
-    prev_bridge_directions.clear();
+    prev_bridge_directions.clear ();
     bridge_length           = 0;
     count_of_bridges        = 0;
     non_connected_buildings = 0;
