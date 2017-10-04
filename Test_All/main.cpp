@@ -39,8 +39,8 @@ void test_range(int a, int b)
     for (int i = a; i < b; i++)
     {
         const std::string HDFile = dirHD_10_10 + "model_hashdot_" + std::to_string(i) + ".txt";  
-        const std::string B  = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
-        const std::string A  = dirConnected_10_10 + "model_connected_" + std::to_string(i) + ".txt";
+        const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
+        const std::string A      = dirConnected_10_10 + "model_connected_" + std::to_string(i) + ".txt";
         hash_dot.Read_From_File(HDFile);
         m.Create_Vertexes();
         m.enumerateBuildings();
@@ -50,16 +50,17 @@ void test_range(int a, int b)
 
         if (!files_identical(A, B))
         {
-            cout << "Not Identical";
+            cout << "Not Identical\n";
             break;
         }
         else
-            cout << "OK";
-    } 
+            cout << "OK\n";
+        clean_all();
+    }  
 }
 
 int main()
 {
-    test_range(5, 6);
+    test_range(0, 99);
     std::system("pause");
 } 
