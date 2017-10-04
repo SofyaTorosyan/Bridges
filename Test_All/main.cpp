@@ -1,5 +1,21 @@
 #include "../Header.h"
 
+
+string num_str(const std::string& fileNameA)
+{
+    std::ifstream A(fileNameA);
+    if (!A)
+        cout << "Not A";
+    string str;
+    string line;
+    while (getline(A, line))
+        for (char c : line)
+            if (isdigit(c))
+                str.push_back(c);
+    return str; 
+}
+
+
 std::string strip_whitespaces(std::string s)
 {
     s.erase(std::remove_if(s.begin(), s.end(), [](char c) { return std::isspace(c); }), s.end());
@@ -47,20 +63,20 @@ void test_range(int a, int b)
         m.Circle(); 
 
         m.Write_To_File(B); 
-
-        if (!files_identical(A, B))
+       
+        if (num_str(A) != num_str(B))
         {
-            cout << "Not Identical\n";
+            cout << i << " : Not Identical\n";
             break;
         }
         else
-            cout << "OK\n";
+            cout << i << " : OK\n";
         clean_all();
     }  
 }
 
 int main()
 {
-    test_range(0, 99);
+    test_range(5, 99);
     std::system("pause");
 } 
