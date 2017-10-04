@@ -487,7 +487,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(6, 6); 
+HashDot  hash_dot(10, 10); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -844,7 +844,8 @@ void Matrix<T>::print()
 template<class T>
 int Matrix<T>::Disconnected()
 {
-    int count = 1;
+    vector<int> v;
+    int count = 0;
     bool no_building = false;
     for (int j = 0; j < m.cols(); j++)
     {
@@ -853,8 +854,12 @@ int Matrix<T>::Disconnected()
             if (m(i, j) != nullptr)
             {
                 no_building = true;
-                if ((*m(i, j)).bid != count && (*m(i, j)).bid != 0)
-                    ++count;
+                if((*m(i, j)).bid != 0)
+                    if (std::find(v.begin(), v.end(), (*m(i, j)).bid)==v.end())
+                    {
+                        ++count;
+                        v.push_back((*m(i, j)).bid);
+                    }
             }
         }
     }
