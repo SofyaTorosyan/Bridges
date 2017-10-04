@@ -567,6 +567,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_end = true;
+        (**connectible.first).bid_count++;
 
         if ((**connectible.first).is_on_bridge_start)
         {
@@ -585,12 +586,14 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             connectible.first.move_left();
         }
 
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_start)
         {
             prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
         }
         else
             (**connectible.first).is_on_bridge_start = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -627,6 +630,8 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_start = true;
+
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -641,6 +646,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_end = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -663,6 +669,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_start = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -678,6 +685,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_end = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -700,6 +708,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_start = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
