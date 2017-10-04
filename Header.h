@@ -60,6 +60,7 @@ struct Vertex : Point
     int bid                      = 0;
     int bridge_end               = 0;
     int bridge_start             = 0;
+    int bid_count                = 0;
     int  count_for_corner_inners = 0;
     bool is_on_bridge            = false;
     bool is_on_bridge_end        = false;
@@ -376,8 +377,13 @@ public:
             }
             else
             {
+                Direction Dir = find(prev_bridge_directions, *this);
                 if (++(**this)->bridge_start == 1)
-                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
+                    if (Dir == None)
+                        move_Towards_To_Bridge_Direction((**this)->bridge_direction);
+                    else
+                        move_Towards_To_Bridge_Direction(Dir);
+
                 else
                 {
                     if ((**this)->bridge_start == 2)
@@ -487,7 +493,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(10, 10); 
+HashDot  hash_dot(4, 6); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -517,6 +523,7 @@ Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_di
     for (unsigned int i = 0; i < prev_bridge_directions.size(); i++)
         if (prev_bridge_directions[i].first == it)
             return prev_bridge_directions[i].second;
+    return None;
 }
 
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
@@ -554,7 +561,13 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
     switch (connectible.second)
     {
     case 'R':
-        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_end = true;
+
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -571,7 +584,13 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             m(connectible.first.x(), connectible.first.y())->prev_direction = Right;
             connectible.first.move_left();
         }
-        (**connectible.first).is_on_bridge_start = true;
+
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_start = true;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -580,7 +599,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         (**connectible.first).bridge_direction = Right;
         break;
     case 'L':
-        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_end = true;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -597,7 +621,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             m(connectible.first.x(), connectible.first.y())->prev_direction = Left;
             connectible.first.move_right();
         }
-        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_start = true;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -606,7 +635,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         (**connectible.first).bridge_direction = Left;
         break;
     case 'U':
-        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_end = true;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -623,7 +657,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             m(connectible.first.x(), connectible.first.y())->prev_direction = Up;
             connectible.first.move_down();
         }
-        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_start = true;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
@@ -633,7 +672,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         break;
 
     case 'D':
-        (**connectible.first).is_on_bridge_end = true;
+        if ((**connectible.first).is_on_bridge_end)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_end = true;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -650,7 +694,12 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             m(connectible.first.x(), connectible.first.y())->prev_direction = Down;
             connectible.first.move_up();
         }
-        (**connectible.first).is_on_bridge_start = true;
+        if ((**connectible.first).is_on_bridge_start)
+        {
+            prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
+        }
+        else
+            (**connectible.first).is_on_bridge_start = true;
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
