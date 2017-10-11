@@ -170,15 +170,15 @@ public:
     {
     public:
         using vertex_pointer = T;
-        using reference      = T&;
-        using pointer        = T*;
+        using reference = T&;
+        using pointer = T*;
         iterator() = default;
 
         iterator(bool b) : is_on_building_(b) { }
 
         int x() { return x_; }
 
-        int y() { return y_;  }
+        int y() { return y_; }
 
         void set_iterator()
         {
@@ -359,6 +359,31 @@ public:
 
         void move_From_Corner(iterator start, int& count)
         {
+            if ((**this)->bid_count == 2)
+                switch ((*this).prevmove_)
+                {  
+                case Left:
+                    do
+                    move_down();
+                    while ((**this)->bid==0);
+                    break;
+                case Right:
+                    do
+                    move_up();
+                    while ((**this)->bid == 0);
+                    break;
+                case Up:
+                    do
+                    move_left();
+                    while ((**this)->bid == 0);
+                    break;
+                case Down:
+                    do
+                    move_right();
+                    while ((**this)->bid == 0);
+                    break;
+                }
+            else
             if (!(**this)->is_on_bridge_start)
             {
                 if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
@@ -377,13 +402,8 @@ public:
             }
             else
             {
-                Direction Dir = find(prev_bridge_directions, *this);
                 if (++(**this)->bridge_start == 1)
-                    if (Dir == None)
-                        move_Towards_To_Bridge_Direction((**this)->bridge_direction);
-                    else
-                        move_Towards_To_Bridge_Direction(Dir);
-
+                    move_Towards_To_Bridge_Direction((**this)->bridge_direction);
                 else
                 {
                     if ((**this)->bridge_start == 2)
@@ -393,6 +413,7 @@ public:
                 }
             }
         }
+    
 
         void move_Clockwise_From_Corner(iterator start, int& count)
         {
@@ -401,10 +422,10 @@ public:
                 if ((*this) != start)
                     switch ((**this)->prev_direction)
                     {
-                    case Up:    move_right(); break;
-                    case Down:  move_left();  break;
-                    case Left:  move_up();    break;
-                    case Right: move_down();  break;
+                    case Up:    move_right();  break;
+                    case Down:  move_left();   break;
+                    case Left:  move_up();     break;
+                    case Right: move_down();   break;
                     }
                 else
                 {
@@ -493,7 +514,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(4, 6); 
+HashDot  hash_dot(30, 30); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -586,7 +607,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
             connectible.first.move_left();
         }
 
-        (**connectible.first).bid_count++;
+       
         if ((**connectible.first).is_on_bridge_start)
         {
             prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
@@ -608,6 +629,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         else
             (**connectible.first).is_on_bridge_end = true;
+        (**connectible.first).bid_count++;
         if ((**connectible.first).is_on_bridge_start)
         {
             (**connectible.first).is_on_bridge_start = false;
@@ -936,7 +958,7 @@ void Matrix<T>::Write_To_File(const string file_name)
                 B_File << " ";
             else
             {
-                if ((*m(i, j)).is_on_bridge)
+                if ((*m(i, j)).is_on_bridge || (*m(i,j)).type == inside)
                     B_File << '.';
                 else
 
@@ -1166,7 +1188,7 @@ void Matrix<T>::Circle()
     it.first.set_iterator();
     circle_start = it.first;
     connectible.first = circle_start;
-    while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid != 1)
+    while (it.first.x() != rows_-1  && it.first.y() != cols_-1  && max_bid != 1)
     {
         while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
