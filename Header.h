@@ -514,7 +514,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(30, 30); 
+HashDot  hash_dot(3, 4); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -835,6 +835,8 @@ pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*
     return pair<Matrix<Vertex*>::iterator, char>();
 }
 
+std::vector<int> connected_bid;
+
 void find_new_building(Matrix<Vertex*>::iterator& it)
 {
     int bid = (**it).bid;
@@ -845,7 +847,7 @@ void find_new_building(Matrix<Vertex*>::iterator& it)
         while (rows != m.rows() - 1)
         {
             if ((*it) != nullptr)
-                if ((**it).bid != bid && (**it).bid != 0)
+                if (std::find(connected_bid.begin(), connected_bid.end(), (*it)->bid) == connected_bid.end())
                     return;
                 else
                 {
@@ -927,6 +929,8 @@ int Matrix<T>::Disconnected()
     vector<int> v;
     int count = 0;
     bool no_building = false;
+    int i1 = 0;
+    int j1 = 0;
     for (int j = 0; j < m.cols(); j++)
     {
         for (int i = 0; i < m.rows(); i++)
@@ -934,11 +938,13 @@ int Matrix<T>::Disconnected()
             if (m(i, j) != nullptr)
             {
                 no_building = true;
-                if((*m(i, j)).bid != 0)
+                if((*m(i, j)).bid != 0 && (*m(i,j)).type != inside)
                     if (std::find(v.begin(), v.end(), (*m(i, j)).bid)==v.end())
                     {
                         ++count;
                         v.push_back((*m(i, j)).bid);
+                        i1 = i;
+                        j1 = j;
                     }
             }
         }
@@ -1171,13 +1177,14 @@ void Matrix<T>::enumerateBuildings()
     m.cols_ = c;
 }
 
+
 template<class T>
 void Matrix<T>::Circle()
 {
     int count;
     int r = 0;
     radius = 0;
-
+    connected_bid.push_back(0);
     Matrix<Vertex*>::iterator             circle_start;
     pair<Matrix<Vertex*>::iterator, char> it;
     pair<Matrix<Vertex*>::iterator, char> connectible;
@@ -1200,6 +1207,7 @@ void Matrix<T>::Circle()
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
+                    connected_bid.push_back((*it.first)->bid);
                     bridge_length += radius;
                     bridge_starts.push_back(it.first);
                     bridge_ends.push_back(connectible.first);
@@ -1245,12 +1253,12 @@ void Matrix<T>::Circle()
 
         if (max_bid != 1)
         {
+            connected_bid.push_back((*it.first)->bid);
                max_bid--;
-            find_new_building(it.first);
-        
+            find_new_building(it.first);   
             circle_start = it.first;
             radius = 0;
-        }
+        }   
     }
     non_connected_buildings = Disconnected();
 }
@@ -1280,6 +1288,7 @@ void clean_all()
     non_connected_buildings = 0;
     prev_end                = None;
     prev_start              = None;
+    connected_bid.clear();
     hash_dot.clear();
 }
 #endif
