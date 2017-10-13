@@ -1,6 +1,6 @@
 #include "../Header.h"
 
-
+mutex mut;
 string num_str(const std::string& fileNameA)
 {
     std::ifstream A(fileNameA);
@@ -48,35 +48,50 @@ bool files_identical(std::string fileNameA, std::string fileNameB)
 
 void test_range(int a, int b) 
 {
-    const std::string dirHD_10_10        = "../Tests/Hashdots_10_10/";
+    const std::string dirHD_30_30        = "../Tests/Hashdots_30_30/";
     const std::string dirConnected       = "../Tests/Connected/";
-    const std::string dirConnected_10_10 = "../Tests/Connected_10_10/";
+    const std::string dirConnected_30_30 = "../Tests/Connected_30_30/";
 
     for (int i = a; i < b; i++)
     {
-        const std::string HDFile = dirHD_10_10 + "model_hashdot_" + std::to_string(i) + ".txt";  
+        const std::string HDFile = dirHD_30_30  + "model_hashdot_" + std::to_string(i) + ".txt";  
         const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
-        const std::string A      = dirConnected_10_10 + "model_connected_" + std::to_string(i) + ".txt";
+        const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";
+        std::lock_guard<std::mutex> lock(mut);
         hash_dot.Read_From_File(HDFile);
+        
+
         m.Create_Vertexes();
         m.enumerateBuildings();
         m.Circle(); 
 
         m.Write_To_File(B); 
+        
        
         if (num_str(A) != num_str(B))
         {
-            cout << i << " : Not Identical\n";
-            break;
+            cout << i << " : Not Identical??????????????????????????????????????????????????????\n";
+            cout << '\a';
+           
         }
         else
+        {
             cout << i << " : OK\n";
+          
+        }
+      
         clean_all();
     }  
 }
 
 int main()
 {
-    test_range(5, 99);
+    std::thread t1(test_range, 0,    100 );
+    std::thread t2(test_range, 1000,  2000);
+    //std::thread t3(test_range, 1000, 1500);
+    //std::thread t4(test_range, 1500, 2000);
+  
+
+  //  test_range(312, 1000);
     std::system("pause");
 } 
