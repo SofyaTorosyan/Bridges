@@ -54,22 +54,24 @@ void test_range(int a, int b)
 
     for (int i = a; i < b; i++)
     {
-        const std::string HDFile = dirHD_30_30  + "model_hashdot_" + std::to_string(i) + ".txt";
+         std::string HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(i) + ".txt";
 
+   
         if (!std::experimental::filesystem::exists(HDFile))
         {
-            cout << '\a' << "No file----------------------------------------------------------------";
-            const std::string  HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(++i) + ".txt";
+            cout << '\a'<< i  << " No file  ----------------------------------------------------------------"<<endl;
+            HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(++i) + ".txt";
         }
+   
 
         const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
         const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";
   
+        hash_dot.Read_From_File(HDFile);
+
         std::lock_guard<std::mutex> lock(mut); 
         cout << i << endl;
 
-        hash_dot.Read_From_File(HDFile);
-       
         m.Create_Vertexes();
         m.enumerateBuildings();
         m.Circle(); 
