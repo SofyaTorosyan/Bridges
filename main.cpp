@@ -8,11 +8,11 @@ int main()
         Timer T;
         y = 0;
 
-     //    hash_dot.Random_Generate ();
-      hash_dot.Read_From_File();
+        hash_dot.Random_Generate ();
+      // hash_dot.Read_From_File();
         m.Create_Vertexes();
-        m.enumerateBuildings();
-        m.Circle();
+        m.enumerateBuildings(); 
+        m.Circle(); 
         m.print();
         cout << "-----------------------\nNumber of bridges.... " << count_of_bridges << endl;
         cout << "Total length......... "                          << bridge_length    << endl;

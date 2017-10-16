@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <thread>
+#include <mutex>
 #include <utility>   /* std::pair */
 #include <fstream>
 #include <cctype>
@@ -514,7 +516,7 @@ private:
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(3, 4); 
+HashDot  hash_dot(30, 30); 
 ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;

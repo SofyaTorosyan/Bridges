@@ -1,5 +1,5 @@
 #include "../Header.h"
-
+#include<experimental\filesystem>
 mutex mut;
 string num_str(const std::string& fileNameA)
 {
@@ -54,29 +54,36 @@ void test_range(int a, int b)
 
     for (int i = a; i < b; i++)
     {
-        const std::string HDFile = dirHD_30_30  + "model_hashdot_" + std::to_string(i) + ".txt";  
+        const std::string HDFile = dirHD_30_30  + "model_hashdot_" + std::to_string(i) + ".txt";
+
+        if (!std::experimental::filesystem::exists(HDFile))
+        {
+            cout << '\a' << "No file----------------------------------------------------------------";
+            const std::string  HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(++i) + ".txt";
+        }
+
         const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
         const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";
-        std::lock_guard<std::mutex> lock(mut);
-        hash_dot.Read_From_File(HDFile);
-        
+  
+        std::lock_guard<std::mutex> lock(mut); 
+        cout << i << endl;
 
+        hash_dot.Read_From_File(HDFile);
+       
         m.Create_Vertexes();
         m.enumerateBuildings();
         m.Circle(); 
 
         m.Write_To_File(B); 
-        
-       
+         
         if (num_str(A) != num_str(B))
         {
-            cout << i << " : Not Identical??????????????????????????????????????????????????????\n";
-            cout << '\a';
-           
+            cout << endl << " : Not Identical??????????????????????????????????????????????????????\n";
+            cout << '\a';   
         }
         else
         {
-            cout << i << " : OK\n";
+            cout << endl <<i << " : OK\n";
           
         }
       
@@ -86,7 +93,7 @@ void test_range(int a, int b)
 
 int main()
 {
-    std::thread t1(test_range, 0,    100 );
+    std::thread t1(test_range, 0,    1000 );
     std::thread t2(test_range, 1000,  2000);
     //std::thread t3(test_range, 1000, 1500);
     //std::thread t4(test_range, 1500, 2000);
