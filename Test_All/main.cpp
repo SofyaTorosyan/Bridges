@@ -64,9 +64,7 @@ void test_range(int a, int b)
         }
    
         const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
-        const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";
-  
-      
+        const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";  
        
         std::lock_guard<std::mutex> lock(mut); 
         cout << i << endl;
@@ -80,7 +78,7 @@ void test_range(int a, int b)
         if (num_str(A) != num_str(B))
         {
             cout << endl << " : Not Identical??????????????????????????????????????????????????????\n";
-            cout << '\a';   
+            cout << '\a' << '\a' << '\a' << '\a' << '\a' << '\a' << '\a' << '\a' << '\a' << '\a' << '\a';
         }
         else
         {
@@ -101,5 +99,6 @@ int main()
   
 
   //  test_range(312, 1000);
+    cout << "Finish";
     std::system("pause");
 } 

@@ -1,0 +1,36 @@
+      oo   oo                  
+      oo   oo        oo        
+ oooo  oo oo oo      oo        
+ oooo oooooo oo  oo  .         
+   oo oo oooo oo.ooo .     oo  
+   oo.oo   ooooo  oo . oo..oo  
+      oo    oo      oo.oo  oo  
+oo    oo   oo       oo .   oo  
+oooo  oo oooo       oo oo  oooo
+ ooo   . ooo     oo.oo oo  oooo
+  oo   oo        oo    oo   .  
+  oo.oooo       ooo    oo   .  
+     oo         oo         oo  
+     .      oo   oo        oo  
+    oo   oo.oo   oo        .   
+    oo   ooo .oo .     oo  .   
+     oo.oooo ooo . oo  ooooo   
+     oo ooo  oo.oo.oo   oooo   
+                oo .    ooo  oo
+oo                 oo   ooo.ooo
+oooo             oooo      oooo
+oooooo...ooo     oo        ooo 
+oo  oo   ooo      .            
+    .         oo..ooo.oo       
+    oo        oo  ooo ooo      
+   ooo        .   ooo  oo   oo 
+   oo      oooo  oooo   .  ooo 
+   oo    oooooo  oo   oooo.oo. 
+ooooo    oo       oo  oooo   oo
+oooooo  oo        oooo  oo   oo
+    oo..oo          oo         
+-----------------------
+Number of bridges.... 65
+Total length......... 105
+Disconnected groups.. 1
+----------------------- 
