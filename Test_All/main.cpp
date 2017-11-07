@@ -98,7 +98,6 @@ int main()
     //std::thread t4(test_range, 1500, 2000);
   
 
-  //  test_range(312, 1000);
-    cout << "Finish";
-    std::system("pause");
+    t1.join();
+    t2.join();
 } 
