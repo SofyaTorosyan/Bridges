@@ -1007,26 +1007,6 @@ void Matrix<T>::Write_To_File(const string file_name)
     B_File << "Disconnected groups.. "                          << non_connected_buildings << "\n----------------------- \n";
 }
 
-char left(int x, int y)
-{
-    if (x == 0)
-        return '.';
-    return m.hash_dot(x - 1, y);
-}
-
-char up(int x, int y)
-{
-    if (y == 0)
-        return '.';
-    return hash_dot(x, y - 1);
-}
-
-char upleft(int x, int y)
-{
-    if (y == 0 || x == 0)
-        return '.';
-    return hash_dot(x - 1, y - 1);
-}
 
 template<class T>
 void Matrix<T>::C4V(int x, int y)
