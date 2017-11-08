@@ -57,18 +57,24 @@ void test_range(int a, int b)
          std::string HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(i) + ".txt";
 
    
-        if (!std::experimental::filesystem::exists(HDFile))
-        {
-            cout << '\a'<< i  << " No file  ----------------------------------------------------------------"<<endl;
-            HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(++i) + ".txt";
-        }
-   
+        if (!std::experimental::filesystem::exists(HDFile) )
+            if (i != b - 1)
+            {
+                cout << '\a' << i << " No file  ----------------------------------------------------------------" << endl;
+                HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(++i) + ".txt";
+            }
+            else
+            {
+                cout << '\a' << i << " No file  ----------------------------------------------------------------" << endl;
+                break;
+            }
+
         const std::string B      = dirConnected + "model_connected_" + std::to_string(i) + ".txt";
         const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";  
        
         std::lock_guard<std::mutex> lock(mut); 
         cout << i << endl;
-        hash_dot.Read_From_File(HDFile);
+        m.hash_dot.Read_From_File(HDFile);
         m.Create_Vertexes();
         m.enumerateBuildings();
         m.Circle(); 
@@ -85,19 +91,24 @@ void test_range(int a, int b)
             cout << endl <<i << " : OK\n";
           
         }
-      
         clean_all();
     }  
 }
 
 int main()
 {
-    std::thread t1(test_range, 0,    1000 );
-    std::thread t2(test_range, 1000,  2000);
-    //std::thread t3(test_range, 1000, 1500);
-    //std::thread t4(test_range, 1500, 2000);
-  
+    //The number of concurrent threads supported by the implementation = 2
+    //Time for 8 threads = 
+    Timer t;
+    auto f1 = std::async(std::launch::async, test_range, 0, 250);
+    auto f2 = std::async(std::launch::async, test_range, 250, 500);
+    auto f3 = std::async(std::launch::async, test_range, 500, 750);
+    auto f4 = std::async(std::launch::async, test_range, 750, 1000);
+    auto f5 = std::async(std::launch::async, test_range, 1000, 1250);
+    auto f6 = std::async(std::launch::async, test_range, 1250, 1500);
+    auto f7 = std::async(std::launch::async, test_range, 1500, 1750);
+    auto f8 = std::async(std::launch::async, test_range, 1750, 2000);
 
-    t1.join();
-    t2.join();
+    
+    std::system("pause");
 } 
