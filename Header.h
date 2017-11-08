@@ -88,6 +88,7 @@ public:
     {
         hash_dot_.clear();
     }
+
     string& Random_Generate_String(std:: string& line)
     {
         char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
@@ -109,7 +110,6 @@ public:
     
     void Read_From_File(const std::string fileName = "My_City.txt")
     {
-
         hash_dot_.clear();
         std::ifstream fileIn(fileName);
         if (!fileIn)
@@ -150,12 +150,34 @@ public:
     {
         return width_ + 1;
     }
+
+    char left(int x, int y)
+    {
+        if (x == 0)
+            return '.';
+        return hash_dot_[x - 1][ y];
+    }
+
+    char up(int x, int y)
+    {
+        if (y == 0)
+            return '.';
+        return hash_dot_[x][y - 1];
+    }
+
+    char upleft(int x, int y)
+    {
+        if (y == 0 || x == 0)
+            return '.';
+        return hash_dot_[x - 1][y - 1];
+    }
 };
 
 template<class T>
 class Matrix
 {
 public:
+    HashDot  hash_dot(30, 30);
     Matrix();
     ~Matrix();
     void C4V(int, int);
@@ -168,6 +190,7 @@ public:
     void Write_To_File(const string);
     void enumerateBuildings();
     int Disconnected();
+    bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator);
 
     class iterator
     {
@@ -513,11 +536,11 @@ private:
     int  rows_;
     int  cols_;
     M    m_;
+   
 };
 
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
-HashDot  hash_dot(30, 30); 
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
 vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
@@ -532,14 +555,6 @@ bool contains(Vertex* v)
     return (m((*v).x, (*v).y)) != nullptr;
 }
 
-bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
-{
-    if ((hash_dot((**vertex).x,     (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
-     || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x,     (**vertex).y) == '.'))
-        return true;
-    return false;
-
-}
 
 Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions, Matrix<Vertex*>::iterator it)
 {
@@ -883,6 +898,17 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 }
 
 template<class T>
+bool Matrix<T>::is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
+{
+    if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
+        || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
+        return true;
+    return false;
+
+}
+
+
+template<class T>
 Matrix<T>::~Matrix()
 {
     for (int j = 0; j < m.cols_; j++)
@@ -985,7 +1011,7 @@ char left(int x, int y)
 {
     if (x == 0)
         return '.';
-    return hash_dot(x - 1, y);
+    return m.hash_dot(x - 1, y);
 }
 
 char up(int x, int y)
