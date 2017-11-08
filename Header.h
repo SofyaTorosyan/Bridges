@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <future>
 #include <utility>   /* std::pair */
 #include <fstream>
 #include <cctype>
@@ -28,7 +29,7 @@ public:
     ~Timer()
     {
         auto end = std::chrono::steady_clock::now();
-        cout << "\nTime  was " << std::chrono::duration_cast< std::chrono::milliseconds>(end - start).count() << " milliseconds\n";
+        cout << '\a'<<'\a'<<'\a'<<"\nTime  was " << std::chrono::duration_cast< std::chrono::milliseconds>(end - start).count() << " milliseconds\n";
     }
 };
 
@@ -517,7 +518,6 @@ private:
 int radius = 0; 
 int Matrix<Vertex*>::max_bid = 0;
 HashDot  hash_dot(30, 30); 
-ofstream fileOut("Connected.txt");
 Matrix<Vertex*> m;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
 vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
