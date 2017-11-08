@@ -83,7 +83,9 @@ private:
 public:
     HashDot(int l, int w) : length_(l), width_(w)  
     { }
-    
+    HashDot() : length_(30), width_(30)
+    { }
+
     void clear()
     {
         hash_dot_.clear();
@@ -177,7 +179,7 @@ template<class T>
 class Matrix
 {
 public:
-    HashDot  hash_dot(30, 30);
+    HashDot  hash_dot;
     Matrix();
     ~Matrix();
     void C4V(int, int);
@@ -190,7 +192,7 @@ public:
     void Write_To_File(const string);
     void enumerateBuildings();
     int Disconnected();
-    bool is_symmetric_corner_inner(Matrix<Vertex*>::iterator);
+   
 
     class iterator
     {
@@ -529,7 +531,7 @@ public:
         bool is_on_building_ = false;
         Direction prevmove_  = None;
     };
-
+    bool is_symmetric_corner_inner(iterator);
 private:
     using M = vector <vector<Vertex*>>;
     static int max_bid;
@@ -898,13 +900,12 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 }
 
 template<class T>
-bool Matrix<T>::is_symmetric_corner_inner(Matrix<Vertex*>::iterator vertex)
+bool Matrix<T>::is_symmetric_corner_inner(iterator vertex)
 {
     if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
         || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
         return true;
     return false;
-
 }
 
 
@@ -1017,13 +1018,13 @@ void Matrix<T>::C4V(int x, int y)
     v[2] = { x + 1, y + 1 };
     v[3] = { x + 1, y };
 
-    if (left(x, y) == '#')
+    if (hash_dot.left(x, y) == '#')
     {
         v[0].type = wall;
         v[1].type = wall;
     }
     
-    if (up(x, y) == '#')
+    if (hash_dot.up(x, y) == '#')
     {
         if ((*m(x + 1, y)).type == wall)
             v[3].type = corner_inner;
@@ -1038,13 +1039,13 @@ void Matrix<T>::C4V(int x, int y)
 
     if (x != 0 && y != 0)
     {
-        if (left(x, y) == '#' || up(x, y) == '#')
+        if (hash_dot.left(x, y) == '#' || hash_dot.up(x, y) == '#')
         {
             switch ((*m(x, y)).type)
             {
             case corner_inner:
             {
-                if (upleft(x, y) == '#')
+                if (hash_dot.upleft(x, y) == '#')
                     v[0].type = inside;
                 else
                     v[0].type = corner_inner;
@@ -1058,13 +1059,13 @@ void Matrix<T>::C4V(int x, int y)
                 break;
             }
 
-            if (up(x, y) == '#')
+            if (hash_dot.up(x, y) == '#')
                 if ((*m(x + 1, y)).type == wall)
                     v[3].type = corner_inner;
                 else
                     v[3].type = wall;
 
-            if (left(x, y) == '#')
+            if (hash_dot.left(x, y) == '#')
                 v[1].type = wall;
         }
 
@@ -1072,7 +1073,7 @@ void Matrix<T>::C4V(int x, int y)
             if (m(x, y) != nullptr)
                 v[0].type = corner_inner;
 
-        if (up(x, y) != '#')
+        if (hash_dot.up(x, y) != '#')
             if (x != m.rows_ - 1 && m(x + 1, y) != nullptr)
                 v[3].type = corner_inner;
     }
@@ -1297,6 +1298,6 @@ void clean_all()
     prev_end                = None;
     prev_start              = None;
     connected_bid.clear();
-    hash_dot.clear();
+    m.hash_dot.clear();
 }
 #endif
