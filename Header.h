@@ -91,6 +91,13 @@ public:
         hash_dot_.clear();
     }
 
+    void print()
+    {
+        for (int i = 0; i < 30; i++)
+            for (int j = 0; j < 30; j++)
+                cout << hash_dot_[i][j];
+        cout << endl;
+    } 
     string& Random_Generate_String(std:: string& line)
     {
         char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
@@ -157,21 +164,21 @@ public:
     {
         if (x == 0)
             return '.';
-        return hash_dot_[x - 1][ y];
+        return hash_dot_[y][x-1];
     }
 
     char up(int x, int y)
     {
         if (y == 0)
             return '.';
-        return hash_dot_[x][y - 1];
+        return hash_dot_[y - 1][x];
     }
 
     char upleft(int x, int y)
     {
         if (y == 0 || x == 0)
             return '.';
-        return hash_dot_[x - 1][y - 1];
+        return hash_dot_[y - 1][x - 1];
     }
 };
 
@@ -193,7 +200,6 @@ public:
     void enumerateBuildings();
     int Disconnected();
    
-
     class iterator
     {
     public:
@@ -1278,9 +1284,10 @@ void Matrix<T>::Create_Vertexes()
     rows_ = hash_dot.length() + 1;
     cols_ = hash_dot.width() + 1;
     for (int y = 0; y < hash_dot.width(); y++)
-        for (int x = 0; x < hash_dot.length(); x++)
-            if (hash_dot(x, y ) == '#')
+        for (int x = 0; x < hash_dot.length(); x++)   
+            if (hash_dot(x, y) == '#')
                 m.C4V(x, y);
+        
     cout << endl;
 }
 

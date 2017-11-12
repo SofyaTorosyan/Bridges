@@ -54,6 +54,7 @@ void test_range(int a, int b)
 
     for (int i = a; i < b; i++)
     {
+        
          std::string HDFile = dirHD_30_30 + "model_hashdot_" + std::to_string(i) + ".txt";
 
    
@@ -76,6 +77,7 @@ void test_range(int a, int b)
         cout << i << endl;
         m.hash_dot.Read_From_File(HDFile);
         m.Create_Vertexes();
+      
         m.enumerateBuildings();
         m.Circle(); 
 
