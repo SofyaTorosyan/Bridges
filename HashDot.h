@@ -30,3 +30,4 @@ public:
     void Read_From_File(const std::string);
     string& Random_Generate_String(std::string&);  
 };
+#include "HashDot.cpp"
