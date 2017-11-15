@@ -3,7 +3,7 @@
 
 #include "Timer.h"
 #include "HashDot.h"
-
+#include "Vertex.cpp"
 
 
 template<class T>
@@ -714,12 +714,7 @@ void find_new_building(Matrix<Vertex*>::iterator& it)
     }
 }
 
-Vertex::Vertex(int a, int b)
-{
-    x = a;
-    y = b;
-    bid = 0;
-}
+
 
 template<class T>
 Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
