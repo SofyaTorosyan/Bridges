@@ -19,12 +19,50 @@ void HashDot::print()
     cout << endl;
 }
 
-string& HashDot::Random_Generate_String(std::string& line)
+int HashDot::width()
 {
-    char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
-    for (int i = 0; i < length_; i++)
-        line.push_back(str[rand() % 20]);
-    return line;
+    return width_;
+}
+
+int HashDot::length()
+{
+    return length_;
+}
+
+int HashDot::row_size()
+{
+    return length_ + 1;
+}
+
+int HashDot::col_size()
+{
+    return width_ + 1;
+}
+
+char HashDot::up(int x, int y)
+{
+    if (y == 0)
+        return '.';
+    return hash_dot_[y - 1][x];
+}
+
+char HashDot::left(int x, int y)
+{
+    if (x == 0)
+        return '.';
+    return hash_dot_[y][x - 1];
+}
+
+char HashDot::upleft(int x, int y)
+{
+    if (y == 0 || x == 0)
+        return '.';
+    return hash_dot_[y - 1][x - 1];
+}
+
+char& HashDot::operator()(int i, int j)
+{
+    return  hash_dot_[j][i];
 }
 
 void HashDot::Random_Generate()
@@ -56,48 +94,11 @@ void HashDot::Read_From_File(const std::string fileName = "My_City.txt")
     width_ = hash_dot_.size();
 }
 
-int HashDot::length()
+string& HashDot::Random_Generate_String(std::string& line)
 {
-    return length_;
+    char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
+    for (int i = 0; i < length_; i++)
+        line.push_back(str[rand() % 20]);
+    return line;
 }
 
-int HashDot::width()
-{
-    return width_;
-}
-
-char& HashDot::operator()(int i, int j)
-{
-    return  hash_dot_[j][i];
-}
-
-int HashDot::row_size()
-{
-    return length_ + 1;
-}
-
-int HashDot::col_size()
-{
-    return width_ + 1;
-}
-
-char HashDot::left(int x, int y)
-{
-    if (x == 0)
-        return '.';
-    return hash_dot_[y][x - 1];
-}
-
-char HashDot::up(int x, int y)
-{
-    if (y == 0)
-        return '.';
-    return hash_dot_[y - 1][x];
-}
-
-char HashDot::upleft(int x, int y)
-{
-    if (y == 0 || x == 0)
-        return '.';
-    return hash_dot_[y - 1][x - 1];
-}
