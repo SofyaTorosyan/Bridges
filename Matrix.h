@@ -371,16 +371,7 @@ private:
    
 };
 
-int radius = 0; 
-int Matrix<Vertex*>::max_bid = 0;
-Matrix<Vertex*> m;
-vector<pair<Vertex*, Direction>> symmetric_corner_inners;
-vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
-Direction prev_end = None;
-Direction prev_start = None;
-int count_of_bridges = 0;
-int bridge_length    = 0;
-int non_connected_buildings = 0;
+
 
 bool contains(Vertex* v)
 {
