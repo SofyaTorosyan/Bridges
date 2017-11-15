@@ -1,18 +1,5 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <chrono>
-#include <thread>
-#include <mutex>
-#include <future>
-#include <utility>   /* std::pair */
-#include <fstream>
-#include <cctype>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
 
-using namespace std;
 class HashDot
 {
 private:
