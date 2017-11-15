@@ -15,7 +15,6 @@ string num_str(const std::string& fileNameA)
     return str; 
 }
 
-
 std::string strip_whitespaces(std::string s)
 {
     s.erase(std::remove_if(s.begin(), s.end(), [](char c) { return std::isspace(c); }), s.end());

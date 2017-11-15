@@ -1,5 +1,4 @@
 
-
 struct Point
 {
     int x;
@@ -47,3 +46,12 @@ struct Vertex : Point
 };
 
 
+int radius = 0;
+
+
+
+Direction prev_end = None;
+Direction prev_start = None;
+int count_of_bridges = 0;
+int bridge_length = 0;
+int non_connected_buildings = 0;

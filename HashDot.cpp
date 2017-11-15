@@ -6,12 +6,12 @@ HashDot::HashDot(int l, int w) : length_(l), width_(w)
 HashDot::HashDot() : length_(30), width_(30)
 { }
 
-void HashDot::clear()
+inline void HashDot::clear()
 {
     hash_dot_.clear();
 }
 
-void HashDot::print()
+inline void HashDot::print()
 {
     for (int i = 0; i < 30; i++)
         for (int j = 0; j < 30; j++)
@@ -19,53 +19,53 @@ void HashDot::print()
     cout << endl;
 }
 
-int HashDot::width()
+inline int HashDot::width()
 {
     return width_;
 }
 
-int HashDot::length()
+inline int HashDot::length()
 {
     return length_;
 }
 
-int HashDot::row_size()
+inline int HashDot::row_size()
 {
     return length_ + 1;
 }
 
-int HashDot::col_size()
+inline int HashDot::col_size()
 {
     return width_ + 1;
 }
 
-char HashDot::up(int x, int y)
+inline char HashDot::up(int x, int y)
 {
     if (y == 0)
         return '.';
     return hash_dot_[y - 1][x];
 }
 
-char HashDot::left(int x, int y)
+inline char HashDot::left(int x, int y)
 {
     if (x == 0)
         return '.';
     return hash_dot_[y][x - 1];
 }
 
-char HashDot::upleft(int x, int y)
+inline char HashDot::upleft(int x, int y)
 {
     if (y == 0 || x == 0)
         return '.';
     return hash_dot_[y - 1][x - 1];
 }
 
-char& HashDot::operator()(int i, int j)
+inline char& HashDot::operator()(int i, int j)
 {
     return  hash_dot_[j][i];
 }
 
-void HashDot::Random_Generate()
+inline void HashDot::Random_Generate()
 {
     cout << "City with random hashdots\n";
     for (int j = 0; j < width_; j++)
@@ -76,7 +76,7 @@ void HashDot::Random_Generate()
     }
 }
 
-void HashDot::Read_From_File(const std::string fileName = "My_City.txt")
+inline void HashDot::Read_From_File(const std::string fileName = "My_City.txt")
 {
     hash_dot_.clear();
     std::ifstream fileIn(fileName);
@@ -94,7 +94,7 @@ void HashDot::Read_From_File(const std::string fileName = "My_City.txt")
     width_ = hash_dot_.size();
 }
 
-string& HashDot::Random_Generate_String(std::string& line)
+inline string& HashDot::Random_Generate_String(std::string& line)
 {
     char str[20] = { '.','.','.','.','#','.','.','.','.','.' ,'.','.','.','.','.' ,'.','.','.','.','.' };
     for (int i = 0; i < length_; i++)
