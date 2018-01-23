@@ -7,9 +7,9 @@ int main()
      //{
         Timer T;
         y = 0;
-
-      //m.hash_dot.Random_Generate ();
-        m.hash_dot.Read_From_File();
+        const std::string fileName = "My_City.txt";
+     // m.hash_dot.Random_Generate ();
+        m.hash_dot.Read_From_File(fileName);
         m.Create_Vertexes();
         m.enumerateBuildings(); 
         m.Circle(); 

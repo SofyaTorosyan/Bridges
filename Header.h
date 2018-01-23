@@ -3,8 +3,7 @@
 
 #include "Matrix.h"
 
-
-Matrix<Vertex*> m;
+ Matrix<Vertex*> m;
 std::vector<int> connected_bid;
 int Matrix<Vertex*>::max_bid = 0;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
