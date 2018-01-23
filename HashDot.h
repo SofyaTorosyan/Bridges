@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HASHDOT_H
+#define HASHDOT_H
 
 #include <iostream>
 #include <vector>
@@ -30,4 +31,5 @@ public:
     void Read_From_File(const std::string);
     string& Random_Generate_String(std::string&);  
 };
-#include "HashDot.cpp"
+
+#endif
