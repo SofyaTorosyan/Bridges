@@ -7,7 +7,6 @@
 Matrix<Vertex*> m;
 std::vector<int> connected_bid;
 int Matrix<Vertex*>::max_bid = 0;
-
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
 vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_directions;
 
@@ -359,6 +358,4 @@ void clean_all()
     connected_bid.clear();
     m.hash_dot.clear();
 }
-
-#include "Matrix.cpp"
 #endif
