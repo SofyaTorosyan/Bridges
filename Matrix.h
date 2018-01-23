@@ -1,10 +1,9 @@
-#pragma once
-
+#ifndef MATRIX_H
+#define MATRIX_H
 
 #include "Timer.h"
 #include "HashDot.h"
-#include "Vertex.cpp"
-
+#include "Vertex.h"
 
 template<class T>
 class Matrix
@@ -73,4 +72,5 @@ private:
     int  cols_;
     M    m_;
 };
+#endif
 
