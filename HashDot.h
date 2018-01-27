@@ -32,4 +32,5 @@ public:
     string& Random_Generate_String(std::string&);  
 };
 
+
 #endif

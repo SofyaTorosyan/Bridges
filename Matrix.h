@@ -18,7 +18,7 @@ public:
     void print();
     void Circle();
     Vertex*& operator() (int, int);
-    void Create_Vertexes();
+    void  Create_Vertexes();
     void Write_To_File(const string);
     void enumerateBuildings();
     int  Disconnected();
@@ -402,7 +402,7 @@ void Matrix<T>::Circle()
                 int i;
                 for ( i = s_of_b.size() - 2; i > 0; i--)
                 {
-                    if ((s_of_b[i].second) != 0)
+                    if ((s_of_b[i].second) < radius)
                     {
                         circle_start = s_of_b[i].first;
                         it.first = circle_start;
@@ -432,6 +432,8 @@ void Matrix<T>::Circle()
                 {
                     r = radius - 1;
                     s_of_b.push_back(start_of_building((*connectible.first)->bid,radius));
+                    bridge_ends.push_back(connectible.first);
+                    bridge_starts.push_back(it.first);
                     connected_bid.push_back((*it.first)->bid);
                     it.first = connectible.first;
                     bridge_length += radius;  
@@ -474,6 +476,9 @@ void Matrix<T>::Circle()
 
             for (unsigned int i = 0; i < bridge_starts.size(); i++)
                 (**bridge_starts[i]).bridge_start = 0;
+
+            for (unsigned int i = 0; i < bridge_starts.size(); i++)
+                (**bridge_ends[i]).bridge_end = 0;
         }
     
         if (max_bid != 1)

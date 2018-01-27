@@ -2,6 +2,7 @@
 #define HEADER_H
 
 #include "Matrix.h"
+#include "HashDot.h"
 
 Matrix<Vertex*> m;
 std::vector<int> connected_bid;
@@ -384,5 +385,6 @@ void clean_all()
     prev_start              = None;
     connected_bid.clear();
     m.hash_dot.clear();
+    symmetric_corner_inners.clear();
 }
 #endif
