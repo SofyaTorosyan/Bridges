@@ -3,7 +3,7 @@
 
 #include "Matrix.h"
 
- Matrix<Vertex*> m;
+Matrix<Vertex*> m;
 std::vector<int> connected_bid;
 int Matrix<Vertex*>::max_bid = 0;
 vector<pair<Vertex*, Direction>> symmetric_corner_inners;
@@ -23,6 +23,32 @@ Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_di
     return None;
 }
 
+
+std::pair<Matrix<Vertex*>::iterator,int> start_of_building(int bid,int radius)
+{
+    Matrix<Vertex*>::iterator it{0,0};
+    
+   
+    int rows = m.rows();
+    int cols = m.cols();
+    while (cols != m.cols() - 1)
+    {
+        while (rows != m.rows() - 1)
+        {
+            if ((*it) != nullptr && (*it)->bid == bid)
+                    return make_pair(it,radius);
+                else
+                {
+                    rows++;
+                    it.move_right();
+                }
+           
+        }
+        it.update(0, ++cols);
+        rows = 0;
+    }
+   
+}
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
 {
     int i = 0;
