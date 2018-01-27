@@ -371,56 +371,56 @@ void Matrix<T>::enumerateBuildings()
 
 
 
-/*
+
 template<class T>
 void Matrix<T>::Circle()
 {
     int count;
     int r = 0;
-    radius = 0;
-    int temp = 0;
+   
     connected_bid.push_back(0);
    
    
-    Matrix<Vertex*>::iterator             circle_start;
+   
     pair <Matrix<Vertex*>::iterator, char> it;
-    pair <Matrix<Vertex*>::iterator, int> temp_;
+    Matrix<Vertex*>::iterator circle_start;
+    vector<Matrix<Vertex*>::iterator> bridge_starts;
+    vector<Matrix<Vertex*>::iterator> bridge_ends;
+    vector< pair<Matrix<Vertex*>::iterator, int>> s_of_b;
     pair <Matrix<Vertex*>::iterator, char> connectible;
-    vector<pair< Matrix<Vertex*>::iterator, int> > bridge_starts;
-    vector<pair< Matrix<Vertex*>::iterator, int> > bridge_ends;
-    vector<pair< Matrix<Vertex*>::iterator, int> > building_starts;
-
     
     non_connected_buildings = max_bid;
     it.first.set_iterator();
-    building_starts.push_back(it);
+    s_of_b.push_back(make_pair(it.first,0));
     circle_start = it.first;
-    connectible.first = circle_start;
     while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid != 1)
     {
         while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
-            if (building_starts[building_starts.size()-1].second == 0 && building_starts.size())
+            if (r == 0 && s_of_b.size()>1)
             {
-                bool find = false;
-                for (auto i = building_starts.size() - 1; i > 0; i--)
+                int i;
+                for ( i = s_of_b.size() - 2; i > 0; i--)
                 {
-                    if ((building_starts[i].second) != 0)
+                    if ((s_of_b[i].second) != 0)
                     {
-                        circle_start = building_starts[i].first;
-                        find = true;
+                        circle_start = s_of_b[i].first;
+                        it.first = circle_start;
+                        break;
                     }
-                    break;
                 }
-                if (!find)  circle_start = building_starts[0];
+                if (!i)
+                {
+                    circle_start = s_of_b[0].first;
+                    it.first = circle_start;
+                }
             }
 
-            else if(building_starts[building_starts.size() - 1].second)
+            else if(r)
             {
-                it.first = connectible.first;
-                building_starts[building_starts.size() - 1].second--;
-              
-                (**it.first).bridge_start = 0;
+               // it.first = connectible.first;
+                r--;
+               // (**it.first).bridge_start = 0;
             }
 
             radius++;
@@ -430,39 +430,29 @@ void Matrix<T>::Circle()
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
-                    building_starts.push_back(start_of_building((*connectible.first)->bid,temp));
-                    
-                    (*it.first)->bid = (*it.first)->bid;
-                    it.first = connectible.first;
-                    temp = radius - 1;
+                    r = radius - 1;
+                    s_of_b.push_back(start_of_building((*connectible.first)->bid,radius));
                     connected_bid.push_back((*it.first)->bid);
-                    bridge_length += radius;
-
-                    
-                    temp_.first = it.first;
-                    temp_.second = temp;
-                   // bridge_ends.push_back(temp_);
-                   // bridge_ends.push_back(connectible.first);
+                    it.first = connectible.first;
+                    bridge_length += radius;  
                     connect_2_building(connectible, (**circle_start).bid);
-                    circle_start = it.first;
-                    count = 0;
+                    
+                    count  = 0;
                     radius = 1;
-                    for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
-                        m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->count_for_corner_inners = 0;
-
-                    max_bid--;
+                    circle_start = it.first;
                     count_of_bridges++;
+                    max_bid--;
+
+                    for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
+                        m(symmetric_corner_inners[i].first->x, symmetric_corner_inners[i].first->y)->count_for_corner_inners = 0;
 
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                        (*bridge_starts[i].first)->bridge_start = 0;
+                        (**bridge_starts[i]).bridge_start = 0;
 
                     for (unsigned int i = 0; i < bridge_ends.size(); i++)
-                        (*bridge_ends[i].first)->bridge_end = 0;
-                    (**it.first).bridge_start = 0;
-                   
+                        (**bridge_ends[i]).bridge_end = 0;
                 }
                 if (max_bid != 1)
-
                     switch ((*it.first)->type)
                     {
                     case wall:
@@ -480,13 +470,12 @@ void Matrix<T>::Circle()
             }
 
             for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
-                m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
+                m(symmetric_corner_inners[i].first->x, symmetric_corner_inners[i].first->y)->prev_direction = symmetric_corner_inners[i].second;
 
             for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                (*bridge_starts[i].first)->bridge_start = 0;
+                (**bridge_starts[i]).bridge_start = 0;
         }
     
-
         if (max_bid != 1)
         {
             connected_bid.push_back((*it.first)->bid);
@@ -499,7 +488,6 @@ void Matrix<T>::Circle()
     non_connected_buildings = Disconnected();
 }
 
-*/
 
 template<class T>
 void Matrix<T>::Create_Vertexes()
