@@ -31,6 +31,7 @@ public:
         using pointer = T*;
         iterator() = default;
         iterator(bool);
+        iterator(int, int);
         int x();
         int y();
         void set_iterator();
@@ -80,6 +81,7 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
     for (auto& col : m_)
         col.resize(cols_);
 }
+
 
 template<class T>
 bool Matrix<T>::is_symmetric_corner_inner(iterator vertex)
@@ -368,28 +370,59 @@ void Matrix<T>::enumerateBuildings()
 }
 
 
+
+/*
 template<class T>
 void Matrix<T>::Circle()
 {
     int count;
     int r = 0;
     radius = 0;
+    int temp = 0;
     connected_bid.push_back(0);
+   
+   
     Matrix<Vertex*>::iterator             circle_start;
-    pair<Matrix<Vertex*>::iterator, char> it;
-    pair<Matrix<Vertex*>::iterator, char> connectible;
-    vector< Matrix<Vertex*>::iterator > bridge_starts;
-    vector< Matrix<Vertex*>::iterator > bridge_ends;
+    pair <Matrix<Vertex*>::iterator, char> it;
+    pair <Matrix<Vertex*>::iterator, int> temp_;
+    pair <Matrix<Vertex*>::iterator, char> connectible;
+    vector<pair< Matrix<Vertex*>::iterator, int> > bridge_starts;
+    vector<pair< Matrix<Vertex*>::iterator, int> > bridge_ends;
+    vector<pair< Matrix<Vertex*>::iterator, int> > building_starts;
 
+    
     non_connected_buildings = max_bid;
     it.first.set_iterator();
+    building_starts.push_back(it);
     circle_start = it.first;
     connectible.first = circle_start;
     while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid != 1)
     {
         while (radius != max(m.rows_, m.cols_) && max_bid != 1)
         {
-            it.first = circle_start;
+            if (building_starts[building_starts.size()-1].second == 0 && building_starts.size())
+            {
+                bool find = false;
+                for (auto i = building_starts.size() - 1; i > 0; i--)
+                {
+                    if ((building_starts[i].second) != 0)
+                    {
+                        circle_start = building_starts[i].first;
+                        find = true;
+                    }
+                    break;
+                }
+                if (!find)  circle_start = building_starts[0];
+            }
+
+            else if(building_starts[building_starts.size() - 1].second)
+            {
+                it.first = connectible.first;
+                building_starts[building_starts.size() - 1].second--;
+              
+                (**it.first).bridge_start = 0;
+            }
+
             radius++;
             count = 0;
             while (count != 2)
@@ -397,24 +430,36 @@ void Matrix<T>::Circle()
                 connectible = find_Isolated_Building(it, (**it.first).bid);
                 if (connectible.first != pair<iterator, char>().first && connectible.second != pair<iterator, char>().second && (**it.first).bid != (**connectible.first).bid && (**it.first).bid != 0)
                 {
+                    building_starts.push_back(start_of_building((*connectible.first)->bid,temp));
+                    
+                    (*it.first)->bid = (*it.first)->bid;
+                    it.first = connectible.first;
+                    temp = radius - 1;
                     connected_bid.push_back((*it.first)->bid);
                     bridge_length += radius;
-                    bridge_starts.push_back(it.first);
-                    bridge_ends.push_back(connectible.first);
+
+                    
+                    temp_.first = it.first;
+                    temp_.second = temp;
+                   // bridge_ends.push_back(temp_);
+                   // bridge_ends.push_back(connectible.first);
                     connect_2_building(connectible, (**circle_start).bid);
+                    circle_start = it.first;
                     count = 0;
                     radius = 1;
                     for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
                         m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->count_for_corner_inners = 0;
-                    it.first = circle_start;
+
                     max_bid--;
                     count_of_bridges++;
 
                     for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                        (**bridge_starts[i]).bridge_start = 0;
+                        (*bridge_starts[i].first)->bridge_start = 0;
 
                     for (unsigned int i = 0; i < bridge_ends.size(); i++)
-                        (**bridge_ends[i]).bridge_end = 0;
+                        (*bridge_ends[i].first)->bridge_end = 0;
+                    (**it.first).bridge_start = 0;
+                   
                 }
                 if (max_bid != 1)
 
@@ -438,8 +483,9 @@ void Matrix<T>::Circle()
                 m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
 
             for (unsigned int i = 0; i < bridge_starts.size(); i++)
-                (**bridge_starts[i]).bridge_start = 0;
+                (*bridge_starts[i].first)->bridge_start = 0;
         }
+    
 
         if (max_bid != 1)
         {
@@ -452,6 +498,8 @@ void Matrix<T>::Circle()
     }
     non_connected_buildings = Disconnected();
 }
+
+*/
 
 template<class T>
 void Matrix<T>::Create_Vertexes()
@@ -469,6 +517,9 @@ void Matrix<T>::Create_Vertexes()
 
 template<class T>
 Matrix<T>::iterator::iterator(bool b) { is_on_building_(b) }
+
+template<class T>
+Matrix<T>::iterator::iterator(int x, int y): x_(x), y_(y) {  }
 
 template<class T>
 int Matrix<T>::iterator::x() { return x_; }
@@ -707,8 +758,15 @@ void Matrix<T>::iterator::move_From_Corner(iterator start, int& count) {
         {
             if ((**this)->is_on_bridge_end && ++(**this)->bridge_end == 2)
             {
-                (**this)->bridge_end = 0;
-                move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
+                if ((**this)->bridge_start != 0)
+                {
+                    (**this)->bridge_end = 0;
+                    move_Opposite_To_Bridge_Direction((**this)->bridge_direction);
+                }
+                else
+                {
+                    count = 2;
+                }
             }
             else
             {
