@@ -29,24 +29,25 @@ std::pair<Matrix<Vertex*>::iterator,int> start_of_building(int bid,int radius)
     Matrix<Vertex*>::iterator it{0,0};
     
    
-    int rows = m.rows();
-    int cols = m.cols();
-    while (cols != m.cols() - 1)
+    int row = 0;
+    int col =  0;
+    while (col != m.cols() - 1)
     {
-        while (rows != m.rows() - 1)
+        while (row != m.rows() - 1)
         {
             if ((*it) != nullptr && (*it)->bid == bid)
                     return make_pair(it,radius);
                 else
                 {
-                    rows++;
+                    row++;
                     it.move_right();
                 }
            
         }
-        it.update(0, ++cols);
-        rows = 0;
+        it.update(0, ++col);
+        row = 0;
     }
+    return make_pair(it, 0);
    
 }
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
@@ -120,6 +121,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         if ((**connectible.first).is_on_bridge_end)
         {
             (**connectible.first).is_on_bridge_end = false;
+
             prev_bridge_directions.push_back(make_pair(connectible.first, (**connectible.first).bridge_direction));
         }
         (**connectible.first).bridge_direction = Right;
