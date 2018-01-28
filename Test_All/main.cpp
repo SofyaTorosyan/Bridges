@@ -74,7 +74,6 @@ void test_range(int a, int b)
         const std::string A      = dirConnected_30_30 + "model_connected_" + std::to_string(i) + ".txt";  
        
         std::lock_guard<std::mutex> lock(mut); 
-        cout << i << endl;
         m.hash_dot.Read_From_File(HDFile);
         m.Create_Vertexes();
       
@@ -90,7 +89,7 @@ void test_range(int a, int b)
         }
         else
         {
-            cout << endl <<i << " : OK\n";
+            cout <<i << " : OK\n";
           
         }
         clean_all();
@@ -102,16 +101,16 @@ int main()
     //The number of concurrent threads supported by the implementation = 2
     //Time for 8 threads = 
     Timer t;
-   // auto f1 = std::thread( test_range, 0, 250);     // change to std::async ()
-   // f1.join();
-    test_range(0,1);
-  //  auto f2 = std::thread( test_range, 250, 500);
-  //  auto f3 = std::thread( test_range, 500, 750);
-  //  auto f4 = std::thread( test_range, 750, 1000);
-  //  auto f5 = std::thread( test_range, 1000, 1250);
-  //  auto f6 = std::thread( test_range, 1250, 1500);
-  //  auto f7 = std::thread( test_range, 1500, 1750);
-  //  auto f8 = std::thread( test_range, 1750, 2000);
+   auto f1 = std::thread( test_range, 0, 250);     // change to std::async ()
+  // f1.join();
+  
+    auto f2 = std::thread( test_range, 250, 500);
+    auto f3 = std::thread( test_range, 500, 750);
+    auto f4 = std::thread( test_range, 750, 1000);
+    auto f5 = std::thread( test_range, 1000, 1250);
+    auto f6 = std::thread( test_range, 1250, 1500);
+    auto f7 = std::thread( test_range, 1500, 1750);
+    auto f8 = std::thread( test_range, 1750, 2000);
 
     
    std::system("pause");
