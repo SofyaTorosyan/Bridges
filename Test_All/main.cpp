@@ -1,5 +1,6 @@
 #include "../Header.h"
 #include<experimental\filesystem>
+#include "../HashDot.h"
 mutex mut;
 string num_str(const std::string& fileNameA)
 {
@@ -79,7 +80,7 @@ void test_range(int a, int b)
       
         m.enumerateBuildings();
         m.Circle(); 
-        m.print();
+      
         m.Write_To_File(B); 
          
         if (num_str(A) != num_str(B))
@@ -101,15 +102,17 @@ int main()
     //The number of concurrent threads supported by the implementation = 2
     //Time for 8 threads = 
     Timer t;
-    auto f1 = std::thread( test_range, 0, 250);     // change to std::async ()
-    auto f2 = std::thread( test_range, 250, 500);
-    auto f3 = std::thread( test_range, 500, 750);
-    auto f4 = std::thread( test_range, 750, 1000);
-    auto f5 = std::thread( test_range, 1000, 1250);
-    auto f6 = std::thread( test_range, 1250, 1500);
-    auto f7 = std::thread( test_range, 1500, 1750);
-    auto f8 = std::thread( test_range, 1750, 2000);
+   // auto f1 = std::thread( test_range, 0, 250);     // change to std::async ()
+   // f1.join();
+    test_range(0,1);
+  //  auto f2 = std::thread( test_range, 250, 500);
+  //  auto f3 = std::thread( test_range, 500, 750);
+  //  auto f4 = std::thread( test_range, 750, 1000);
+  //  auto f5 = std::thread( test_range, 1000, 1250);
+  //  auto f6 = std::thread( test_range, 1250, 1500);
+  //  auto f7 = std::thread( test_range, 1500, 1750);
+  //  auto f8 = std::thread( test_range, 1750, 2000);
 
     
-    std::system("pause");
+   std::system("pause");
 } 
