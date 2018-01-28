@@ -378,6 +378,7 @@ void clean_all()
    
     symmetric_corner_inners.clear();
     prev_bridge_directions.clear ();
+    radius = 0;
     bridge_length           = 0;
     count_of_bridges        = 0;
     non_connected_buildings = 0;
