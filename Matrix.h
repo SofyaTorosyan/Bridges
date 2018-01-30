@@ -29,8 +29,8 @@ public:
         using vertex_pointer = T;
         using reference = T&;
         using pointer = T*;
-        iterator() = default;
-       explicit iterator(bool);
+        iterator() =default;
+        iterator(bool);
         iterator(int, int);
         int x();
         int y();
@@ -65,7 +65,7 @@ public:
         bool is_on_building_ = false;
         Direction prevmove_ = None;
     };
-    bool is_symmetric_corner_inner(const iterator&);
+    bool is_symmetric_corner_inner(iterator&);
 private:
     using M = vector <vector<Vertex*>>;
     static int max_bid;
@@ -84,7 +84,7 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 
 
 template<class T>
-bool Matrix<T>::is_symmetric_corner_inner(const iterator& vertex)
+bool Matrix<T>::is_symmetric_corner_inner(iterator& vertex)
 {
     if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
         || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
@@ -274,7 +274,7 @@ Vertex*& Matrix<T>:: operator() (int r, int c)
 template<class T>
 void Matrix<T>::enumerateBuildings()
 {
-    Matrix<Vertex*>::iterator it;
+    Matrix<Vertex*>::iterator it =(0,0);
     Matrix<Vertex*>::iterator start = it;
     bool go_out = true;
     int r = m.rows_;
@@ -470,10 +470,12 @@ void Matrix<T>::Create_Vertexes()
 
 
 template<class T>
-Matrix<T>::iterator::iterator(bool b) { is_on_building_(b); }
+Matrix<T>::iterator::iterator(bool b) { is_on_building_ = b; }
 
 template<class T>
-Matrix<T>::iterator::iterator(int x, int y) : x_(x), y_(y) { cout << "nnnnnnnnnnnnnnnn" << endl; **this = m(0, 0); }
+Matrix<T>::iterator::iterator(int x, int y) : x_(x), y_(y) 
+{
+}
 
 template<class T>
 int Matrix<T>::iterator::x() { return x_; }
