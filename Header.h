@@ -25,32 +25,7 @@ Direction find(vector<pair<Matrix<Vertex*>::iterator, Direction>> prev_bridge_di
 }
 
 
-std::pair<Matrix<Vertex*>::iterator,int> start_of_building(int bid,int radius)
-{
-    Matrix<Vertex*>::iterator it{0,0};
-    
-   
-    int row = 0;
-    int col =  0;
-    while (col != m.cols() - 1)
-    {
-        while (row != m.rows() - 1)
-        {
-            if ((*it) != nullptr && (*it)->bid == bid)
-                    return make_pair(it,radius);
-                else
-                {
-                    row++;
-                    it.move_right();
-                }
-           
-        }
-        it.update(0, ++col);
-        row = 0;
-    }
-    return make_pair(it, 0);
-   
-}
+
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
 {
     int i = 0;
