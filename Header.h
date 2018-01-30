@@ -344,7 +344,6 @@ pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*
 
 void find_new_building(Matrix<Vertex*>::iterator& it)
 {
-    int bid = (**it).bid;
     int rows = (**it).x;
     int cols = (**it).y;
     while (cols != m.cols() - 1)
