@@ -141,8 +141,7 @@ int Matrix<T>::Disconnected()
     vector<int> v;
     int count = 0;
     bool no_building = false;
-    int i1 = 0;
-    int j1 = 0;
+   
     for (int j = 0; j < m.cols(); j++)
     {
         for (int i = 0; i < m.rows(); i++)
@@ -155,8 +154,7 @@ int Matrix<T>::Disconnected()
                     {
                         ++count;
                         v.push_back((*m(i, j)).bid);
-                        i1 = i;
-                        j1 = j;
+                       
                     }
             }
         }
@@ -472,10 +470,10 @@ void Matrix<T>::Create_Vertexes()
 
 
 template<class T>
-Matrix<T>::iterator::iterator(bool b) { is_on_building_(b) }
+Matrix<T>::iterator::iterator(bool b) { is_on_building_(b); }
 
 template<class T>
-Matrix<T>::iterator::iterator(int x, int y): x_(x), y_(y) {  }
+Matrix<T>::iterator::iterator(int x, int y) : x_(x), y_(y) { cout << "nnnnnnnnnnnnnnnn" << endl; **this = m(0, 0); }
 
 template<class T>
 int Matrix<T>::iterator::x() { return x_; }
