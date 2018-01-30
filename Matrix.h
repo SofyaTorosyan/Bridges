@@ -19,7 +19,7 @@ public:
     void Circle();
     Vertex*& operator() (int, int);
     void  Create_Vertexes();
-    void Write_To_File(const string);
+    void Write_To_File(const string&);
     void enumerateBuildings();
     int  Disconnected();
 
@@ -65,7 +65,7 @@ public:
         bool is_on_building_ = false;
         Direction prevmove_ = None;
     };
-    bool is_symmetric_corner_inner(iterator);
+    bool is_symmetric_corner_inner(const iterator&);
 private:
     using M = vector <vector<Vertex*>>;
     static int max_bid;
@@ -84,7 +84,7 @@ Matrix<T>::Matrix() : rows_(hash_dot.length() + 1), cols_(hash_dot.width() + 1)
 
 
 template<class T>
-bool Matrix<T>::is_symmetric_corner_inner(iterator vertex)
+bool Matrix<T>::is_symmetric_corner_inner(const iterator& vertex)
 {
     if ((hash_dot((**vertex).x, (**vertex).y - 1) == '.' && hash_dot((**vertex).x - 1, (**vertex).y) == '.')
         || (hash_dot((**vertex).x - 1, (**vertex).y - 1) == '.' && hash_dot((**vertex).x, (**vertex).y) == '.'))
@@ -163,7 +163,7 @@ int Matrix<T>::Disconnected()
 }
 
 template<class T>
-void Matrix<T>::Write_To_File(const string file_name)
+void Matrix<T>::Write_To_File(const string& file_name)
 {
     ofstream B_File(file_name);
     for (int j = 0; j < m.cols(); j++)
