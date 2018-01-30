@@ -220,7 +220,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         (**connectible.first).bridge_direction = Down;
         connectible.first.move_up();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        while (*connectible.first == nullptr || (**connectible.first).is_on_bridge == true)
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
             m(connectible.first.x(), connectible.first.y()) = v;
