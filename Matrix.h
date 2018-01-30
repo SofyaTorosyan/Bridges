@@ -30,7 +30,7 @@ public:
         using reference = T&;
         using pointer = T*;
         iterator() = default;
-        iterator(bool);
+       explicit iterator(bool);
         iterator(int, int);
         int x();
         int y();
