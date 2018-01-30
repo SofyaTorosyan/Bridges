@@ -101,7 +101,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         (**connectible.first).bridge_direction = Right;
         connectible.first.move_left();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        while (*connectible.first == nullptr || (**connectible.first).is_on_bridge == true)
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
             m(connectible.first.x(), connectible.first.y()) = v;
@@ -142,7 +142,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         (**connectible.first).bridge_direction = Left;
         connectible.first.move_right();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        while (*connectible.first == nullptr ||  (**connectible.first).is_on_bridge == true)
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
             m(connectible.first.x(), connectible.first.y()) = v;
@@ -181,7 +181,7 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
         }
         (**connectible.first).bridge_direction = Up;
         connectible.first.move_down();
-        while (*connectible.first == nullptr || (*connectible.first != nullptr && (**connectible.first).is_on_bridge == true))
+        while (*connectible.first == nullptr ||  (**connectible.first).is_on_bridge == true)
         {
             auto v = new Vertex(connectible.first.x(), connectible.first.y());
             m(connectible.first.x(), connectible.first.y()) = v;
