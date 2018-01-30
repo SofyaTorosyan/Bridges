@@ -54,10 +54,12 @@ std::pair<Matrix<Vertex*>::iterator,int> start_of_building(int bid,int radius)
 void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int bid)
 {
     int i = 0;
-    int count = 0;
+   
     pair<Matrix<Vertex*>::iterator, char> connectible_start = connectible;
 
     if ((**connectible.first).bid != bid)
+    {
+        int count = 0;
         while (count != 2)
         {
             switch ((*connectible.first)->type)
@@ -79,6 +81,8 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
                 break;
             }
         }
+    }
+
 
     for (unsigned int i = 0; i < symmetric_corner_inners.size(); i++)
         m(symmetric_corner_inners.at(i).first->x, symmetric_corner_inners.at(i).first->y)->prev_direction = symmetric_corner_inners.at(i).second;
