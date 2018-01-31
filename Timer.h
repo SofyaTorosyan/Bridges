@@ -25,6 +25,6 @@ public:
     ~Timer()
     {
         auto end = std::chrono::steady_clock::now();
-        cout << '\a' << '\a' << '\a' << "\nTime  was " << std::chrono::duration_cast< std::chrono::milliseconds>(end - start).count() << " milliseconds\n";
+        cout << '\a' << '\a' << '\a' << "\nTime  was " << std::chrono::duration_cast< std::chrono::seconds>(end - start).count() << " seconds\n";
     }
 };

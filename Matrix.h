@@ -30,7 +30,7 @@ public:
         using reference = T&;
         using pointer = T*;
         iterator() =default;
-        iterator(bool);
+        explicit iterator(bool);
         iterator(int, int);
         int x();
         int y();
@@ -274,7 +274,7 @@ Vertex*& Matrix<T>:: operator() (int r, int c)
 template<class T>
 void Matrix<T>::enumerateBuildings()
 {
-    Matrix<Vertex*>::iterator it =(0,0);
+    Matrix<Vertex*>::iterator it(0,0);
     Matrix<Vertex*>::iterator start = it;
     bool go_out = true;
     int r = m.rows_;
@@ -475,6 +475,7 @@ Matrix<T>::iterator::iterator(bool b) { is_on_building_ = b; }
 template<class T>
 Matrix<T>::iterator::iterator(int x, int y) : x_(x), y_(y) 
 {
+    cout << '\a';
 }
 
 template<class T>
