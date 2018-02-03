@@ -13,9 +13,9 @@ public:
     Matrix();
     ~Matrix();
     void C4V(int, int);
-    int  rows();
-    int  cols();
-    void print();
+    int  rows()  const;
+    int  cols()  const;
+    void print() const;
     void Circle();
     Vertex*& operator() (int, int);
     void  Create_Vertexes();
@@ -101,19 +101,19 @@ Matrix<T>::~Matrix()
 }
 
 template<class T>
-int Matrix<T>::rows()
+int Matrix<T>::rows() const
 {
     return rows_;
 }
 
 template<class T>
-int Matrix<T>::cols()
+int Matrix<T>::cols() const
 {
     return cols_;
 }
 
 template<class T>
-void Matrix<T>::print()
+void Matrix<T>::print() const
 {
     cout << "City with bridges is\n";
     for (int j = 0; j < cols_; j++)
