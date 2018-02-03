@@ -19,7 +19,7 @@ public:
     void Circle();
     Vertex*& operator() (int, int);
     void  Create_Vertexes();
-    void Write_To_File(const string&);
+   static void Write_To_File(const string&);
     void enumerateBuildings();
     int  Disconnected();
 
@@ -163,7 +163,7 @@ int Matrix<T>::Disconnected()
 }
 
 template<class T>
-void Matrix<T>::Write_To_File(const string& file_name)
+ void Matrix<T>::Write_To_File(const string& file_name)
 {
     ofstream B_File(file_name);
     for (int j = 0; j < m.cols(); j++)
