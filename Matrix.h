@@ -9,7 +9,7 @@ template<class T>
 class Matrix
 {
 public:
-    HashDot  hash_dot;
+    HashDot  hash_dot; // size-24,align-4
     Matrix();
     ~Matrix();
     void C4V(int, int);
@@ -29,7 +29,7 @@ public:
         using vertex_pointer = T;
         using reference = T&;
         using pointer = T*;
-        iterator() =default;
+        iterator() = default;
         explicit iterator(bool);
         iterator(int, int);
         int x();
@@ -69,9 +69,9 @@ public:
 private:
     using M = vector <vector<Vertex*>>;
     static int max_bid;
-    int  rows_;
-    int  cols_;
-    M    m_;
+    int  rows_; //size-4
+    int  cols_; //size-4
+    M    m_;   // size-16, align-4
 };
 
 template<class T>
@@ -373,6 +373,7 @@ void Matrix<T>::enumerateBuildings()
 template<class T>
 void Matrix<T>::Circle()
 {
+    cout << endl<<"Count of cities "<<max_bid;
     int count;
    
     connected_bid.push_back(0);
@@ -727,9 +728,6 @@ void Matrix<T>::iterator::move_From_Corner(iterator start, int& count) {
             }
             else
             {
-                if ((**this)->is_on_bridge_end && (**this)->prev_direction == None)
-                    move_Clockwise_From_Corner(start, count);
-                else
                     move_Clockwise_From_Corner(start, count);
                 return;
             }
