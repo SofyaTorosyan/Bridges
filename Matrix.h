@@ -21,7 +21,7 @@ public:
     void  Create_Vertexes();
    static void Write_To_File(const string&);
     void enumerateBuildings();
-    int  Disconnected();
+   static int  Disconnected();
 
     class iterator
     {
