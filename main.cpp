@@ -2,7 +2,7 @@
 int main()
 {
      //while (cin.get() != '0')
-     {
+     { 
         Timer T;
         const std::string fileName = "My_City.txt";
         m.hash_dot.Random_Generate ();
@@ -16,6 +16,7 @@ int main()
         cout << "Disconnected groups.. "                          << non_connected_buildings << "\n----------------------- \n";
         clean_all();
     }
+  //  cout <<sizeof(Matrix<Vertex*>);
      std::system("pause"); 
 } 
 

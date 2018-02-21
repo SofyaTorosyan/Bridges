@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<InfoWarnings>
+  <Info>Begin analysis with CppDepend v2018.1.0.73</Info>
+  <Info>The parser used is Clang</Info>
+  <Info>2 Cores are used, you can change this value from the menu Tools-&gt;Options-&gt;Parser Configuration</Info>
+  <ClangError>Project:Building_bridges=&gt;use of undeclared identifier 'm' at C:\Users\Erik\documents\visual studio 2015\Projects\building_bridges/Matrix.h:64:25</ClangError>
+  <ClangError>Project:Building_bridges=&gt;use of undeclared identifier 'symmetric_corner_inners' at C:\Users\Erik\documents\visual studio 2015\Projects\building_bridges/Matrix.h:353:50</ClangError>
+  <ClangError>Project:Building_bridges=&gt;use of undeclared identifier 'connected_bid' at C:\Users\Erik\documents\visual studio 2015\Projects\building_bridges/Matrix.h:379:5</ClangError>
+  <Info>No dependency cycle detected in Projects referencement graph.</Info>
+  <Info>Analyse dependencies of your application.</Info>
+  <Info>Log trend metrics values.</Info>
+  <Info>Execute queries and rules.</Info>
+  <Info>CppDepend analysis done. Duration: 00:01:58</Info>
+  <Info>Building the report (standard).</Info>
+</InfoWarnings>

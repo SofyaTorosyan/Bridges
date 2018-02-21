@@ -10,23 +10,24 @@ using namespace std;
 
 class HashDot
 {
-private:
-    int            width_;
+private:  
+    vector<string> hash_dot_;  // size=16, align=4,   sizeof(HashDot) = 24, alignof(hashdot)=4
     int            length_;
-    vector<string> hash_dot_;  
+    int            width_;
+    
 public:
     HashDot();
     HashDot(int, int);
     void clear();
-    void print();
-    int  width();
-    int  length();
-    int  row_size();
-    int  col_size();
-    char up         (int, int);
-    char left       (int, int);   
-    char upleft     (int, int);
-    char& operator()(int, int); 
+    void print() const;
+    int  width() const;
+    int  length()const;
+    int  row_size()const;
+    int  col_size()const;
+    char up         (int, int) const;
+    char left       (int, int) const;   
+    char upleft     (int, int) const;
+   inline char& operator()(int, int); 
     void Random_Generate();
     void Read_From_File(const std::string&);
     string& Random_Generate_String(std::string&);  
@@ -35,7 +36,7 @@ public:
 HashDot::HashDot(int l, int w) : length_(l), width_(w)
 { }
 
-HashDot::HashDot() : length_(30), width_(30)
+HashDot::HashDot() : length_(100), width_(100) 
 { }
 
 void HashDot::clear()
@@ -43,56 +44,56 @@ void HashDot::clear()
     hash_dot_.clear();
 }
 
-inline void HashDot::print()
-{
-    for (int i = 0; i < 30; i++)
-        for (int j = 0; j < 30; j++)
+inline void HashDot::print() const
+{ 
+    for (int i = 0; i < 100; i++) 
+        for (int j = 0; j < 100; j++)
             cout << hash_dot_[i][j];
     cout << endl;
-}
-
-int HashDot::width()
+} 
+   
+int HashDot::width() const
 {
     return width_;
 }
 
-int HashDot::length()
+int HashDot::length() const
 {
     return length_;
-}
+}  
 
-int HashDot::row_size()
+int HashDot::row_size() const
 {
     return length_ + 1;
 }
 
-int HashDot::col_size()
+int HashDot::col_size() const
 {
     return width_ + 1;
 }
 
-char HashDot::up(int x, int y)
+char HashDot::up(int x, int y) const
 {
     if (y == 0)
         return '.';
     return hash_dot_[y - 1][x];
 }
 
-char HashDot::left(int x, int y)
+char HashDot::left(int x, int y) const
 {
     if (x == 0)
         return '.';
     return hash_dot_[y][x - 1];
 }
 
-char HashDot::upleft(int x, int y)
+char HashDot::upleft(int x, int y) const
 {
     if (y == 0 || x == 0)
         return '.';
     return hash_dot_[y - 1][x - 1];
 }
 
-char& HashDot::operator()(int i, int j)
+inline char& HashDot::operator()(int i, int j)
 {
     return  hash_dot_[j][i];
 }

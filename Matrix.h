@@ -12,7 +12,7 @@ public:
     HashDot  hash_dot; // size-24,align-4
     Matrix();
     ~Matrix();
-    void C4V(int, int);
+    void C4V(int, int) const;
     int  rows()  const;
     int  cols()  const;
     void print() const;
@@ -54,7 +54,7 @@ public:
         void move_Clockwise_From_Corner_Inner();
         void move_Clockwise_From_Inside(int&);
         iterator& operator=(iterator&);
-        reference operator* ();
+        inline reference operator* ();
         pointer operator->();
         bool is_valid();
         iterator update(int, int);
@@ -191,7 +191,7 @@ template<class T>
 
 
 template<class T>
-void Matrix<T>::C4V(int x, int y)
+void Matrix<T>::C4V(int x, int y) const
 {
     auto v = new Vertex[4];
     v[0] = { x,   y };
@@ -812,7 +812,7 @@ typename Matrix<T>::iterator& Matrix<T>::iterator::operator=(iterator& r_it)
 }
 
 template<class T>
-typename Matrix<T>::iterator::reference Matrix<T>::iterator::operator* ()
+inline typename Matrix<T>::iterator::reference Matrix<T>::iterator::operator* ()
 {
     return m_(x_, y_);
 }

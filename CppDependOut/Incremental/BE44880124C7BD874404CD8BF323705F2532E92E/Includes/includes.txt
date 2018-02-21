@@ -1,0 +1,6 @@
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\header.h
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\hashdot.h
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\matrix.h
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\timer.h
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\vertex.h
+c:\users\erik\documents\visual studio 2015\projects\building_bridges\main.cpp
