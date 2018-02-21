@@ -227,34 +227,16 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
 
 pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*>::iterator, char> it, int bid)
 {
-    if ((**it.first).x == 0)
-    {
-        if(((**it.first).x + radius) < m.rows()    &&
-          ((*it.first.right_v(radius)) != nullptr) &&
-          ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0 && (**it.first.right_v(radius)).type != inside))
-                {
-                    it.first.move_right(radius);
-                    (it.second) = 'R';
-                    return it;
-                }
-    }
+   
+      
+    
 
-    if ((**it.first).x == m.rows() - 1)
-    {
-        if ((((**it.first).x - radius) > 0)         &&
-           ((*it.first.left_v(radius)) != nullptr) &&
-           ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0 && (**it.first.left_v(radius)).type != inside))
-                {
-                    it.first.move_left(radius);
-                    (it.second) = 'L';
-                    return it;
-                }
-    }
+    
+    
 
-    else
-    {
-        if (((**it.first).x + radius < m.rows())      &&
-           ((*it.first.right_v(radius)) != nullptr)  &&
+   
+        if (((**it.first).x + radius < m.rows())     &&
+           ((*it.first.right_v(radius)) != nullptr)   &&
            ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0 && (**it.first.right_v(radius)).type != inside))
                 {
                     it.first.move_right(radius);
@@ -263,41 +245,19 @@ pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*
                 }
 
         if ((((**it.first).x - radius) > 0)         &&
-           ((*it.first.left_v(radius)) != nullptr) &&
+           ((*it.first.left_v(radius)) != nullptr)  &&
            ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0 && (**it.first.left_v(radius)).type != inside))
                 {
                     it.first.move_left(radius);
                     (it.second) = 'L';
                     return it;
                 }
-    }
+    
 
-    if ((**it.first).y == 0)
-    {
-        if ((((**it.first).y + radius) < m.cols())  &&
-           ((*it.first.down_v(radius)) != nullptr) &&
-           ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0 && (**it.first.down_v(radius)).type != inside))
-                {
-                    it.first.move_down(radius);
-                    (it.second) = 'D';
-                    return it;
-                }
-    }
 
-    if ((**it.first).y == m.cols() - 1)
-    {
-        if ((((**it.first).y - radius) > 0)       &&
-           ((*it.first.up_v(radius)) != nullptr) &&
-           ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0 && (**it.first.up_v(radius)).type != inside))
-                {
-                    it.first.move_up(radius);
-                    (it.second) = 'U';
-                    return it;
-                }
-    }
+   
+    
 
-    else
-    {
         if ((((**it.first).y + radius) < m.cols())  &&
            ((*it.first.down_v(radius)) != nullptr) &&
            ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0 && (**it.first.down_v(radius)).type != inside))
@@ -315,7 +275,7 @@ pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*
                     (it.second) = 'U';
                     return it;
                 }
-    }
+    
     return pair<Matrix<Vertex*>::iterator, char>();
 }
 

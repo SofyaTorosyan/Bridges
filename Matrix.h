@@ -44,6 +44,7 @@ public:
         iterator up_v(int = 1);
         iterator down_v(int = 1);
         bool operator!=(const iterator&);
+        iterator& operator+(int);
         bool operator==(const iterator&);
         void  move_Opposite_To_Bridge_Direction(Direction);
         void move_Towards_To_Bridge_Direction(Direction);
@@ -161,6 +162,9 @@ int Matrix<T>::Disconnected()
     }
     return  (no_building == true) ? count : --count;
 }
+
+
+
 
 template<class T>
  void Matrix<T>::Write_To_File(const string& file_name)
@@ -529,6 +533,8 @@ typename Matrix<T>::iterator Matrix<T>::iterator::move_up(int i = 1) {
     prevmove_ = Up;
     return *this;
 }
+
+
 
 
 template<class T>
