@@ -227,49 +227,41 @@ void connect_2_building(pair<Matrix<Vertex*>::iterator, char>& connectible, int 
 
 pair<Matrix<Vertex*>::iterator, char> find_Isolated_Building(pair<Matrix<Vertex*>::iterator, char> it, int bid)
 {
-   
-      
-    
+    auto left_v  = (it.first.left_v (radius));
+    auto right_v = (it.first.right_v(radius));
+    auto up_v    = (it.first.up_v   (radius));
+    auto down_v  = (it.first.down_v (radius));
 
-    
-    
-
-   
-        if (((**it.first).x + radius < m.rows())     &&
-           ((*it.first.right_v(radius)) != nullptr)   &&
-           ((**it.first.right_v(radius)).bid != (**it.first).bid && (**it.first.right_v(radius)).bid != 0 && (**it.first.right_v(radius)).type != inside))
+        if (((**it.first).x + radius < m.rows()) &&
+           ((*right_v) != nullptr)               &&
+           ((**right_v).bid != (**it.first).bid && (**right_v).bid != 0 && (**right_v).type != inside))
                 {
                     it.first.move_right(radius);
                     (it.second) = 'R';
                     return it;
                 }
 
-        if ((((**it.first).x - radius) > 0)         &&
-           ((*it.first.left_v(radius)) != nullptr)  &&
-           ((**it.first.left_v(radius)).bid != (**it.first).bid && (**it.first.left_v(radius)).bid != 0 && (**it.first.left_v(radius)).type != inside))
+        if ((((**it.first).x - radius) > 0)  &&
+           (*left_v != nullptr)              &&
+           ((**left_v).bid != (**it.first).bid && (**left_v).bid != 0 && (**left_v).type != inside))
                 {
                     it.first.move_left(radius);
                     (it.second) = 'L';
                     return it;
                 }
     
-
-
-   
-    
-
-        if ((((**it.first).y + radius) < m.cols())  &&
-           ((*it.first.down_v(radius)) != nullptr) &&
-           ((**it.first.down_v(radius)).bid != (**it.first).bid && (**it.first.down_v(radius)).bid != 0 && (**it.first.down_v(radius)).type != inside))
+        if ((((**it.first).y + radius) < m.cols()) &&
+           ((*down_v) != nullptr)                  &&
+           ((**down_v).bid != (**it.first).bid && (**down_v).bid != 0 && (**down_v).type != inside))
                 {
                     it.first.move_down(radius);
                     (it.second) = 'D';
                     return it;
                 }
 
-        if ((((**it.first).y - radius) > 0)       && 
-           ((*it.first.up_v(radius)) != nullptr) &&
-           ((**it.first.up_v(radius)).bid != (**it.first).bid && (**it.first.up_v(radius)).bid != 0 && (**it.first.up_v(radius)).type != inside))
+        if ((((**it.first).y - radius) > 0) && 
+           ((*up_v) != nullptr)             &&
+           ((**up_v).bid != (**it.first).bid && (**up_v).bid != 0 && (**up_v).type != inside))
                 {
                     it.first.move_up(radius);
                     (it.second) = 'U';
