@@ -44,7 +44,6 @@ public:
         iterator up_v(int = 1);
         iterator down_v(int = 1);
         bool operator!=(const iterator&);
-        iterator& operator+(int);
         bool operator==(const iterator&);
         void  move_Opposite_To_Bridge_Direction(Direction);
         void move_Towards_To_Bridge_Direction(Direction);
@@ -377,7 +376,7 @@ void Matrix<T>::enumerateBuildings()
 template<class T>
 void Matrix<T>::Circle()
 {
-    cout << endl<<"Count of cities "<<max_bid;
+    cout << endl<<"Count of cities "<< max_bid;
     int count;
    
     connected_bid.push_back(0);
@@ -391,9 +390,9 @@ void Matrix<T>::Circle()
     it.first.set_iterator();
     circle_start = it.first;
     connectible.first = circle_start;
-    while (it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 && max_bid != 1)
+    while (max_bid != 1 && it.first.x() != rows_ - 1 && it.first.y() != cols_ - 1 )
     {
-        while (radius != max(m.rows_, m.cols_) && max_bid != 1)
+        while (max_bid != 1 && radius != max(m.rows_, m.cols_) )
         {
             it.first = circle_start;
             radius++;

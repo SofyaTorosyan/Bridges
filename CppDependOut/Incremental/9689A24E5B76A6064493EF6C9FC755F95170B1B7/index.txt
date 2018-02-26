@@ -1,1 +1,0 @@
-{"a":"Debug|x64","b":{"c:\\users\\erik\\documents\\visual studio 2015\\projects\\building_bridges\\test_all\\main.cpp":{"Timestamp":1517691546.0,"Reparse":false,"Includes":["c:\\users\\erik\\documents\\visual studio 2015\\projects\\building_bridges\\test_all\\main.cpp"],"IsSource":true,"Errors":[]}}}
